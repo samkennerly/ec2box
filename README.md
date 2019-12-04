@@ -1,2 +1,7 @@
 # ec2box
-Launch an Amazon EC2 instance.
+
+The cloud is just someone else's computer.
+
+<img alt="cloud" src="ec2box.jpeg">
+
+## UNDER CONSTRUCTION
