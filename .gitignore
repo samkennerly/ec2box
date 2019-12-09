@@ -1,0 +1,10 @@
+# Apple debris
+.DS_Store*
+.Spotlight-*
+.Trashes
+.fseventsd
+Thumbs.db
+
+# Terraform state
+.terraform
+*.tfstate*
