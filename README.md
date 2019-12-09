@@ -1,7 +1,19 @@
-# ec2box
+# ec2box (UNDER CONSTRUCTION)
 
 The cloud is just someone else's computer.
 
-<img alt="cloud" src="ec2box.jpeg">
+![Little Fluffy Clouds](ec2box.jpeg)
 
-## UNDER CONSTRUCTION
+## abstract
+
+Use [Terraform] to rent [EC2 instances] from [Amazon Web Services].
+
+[Terraform]: https://www.terraform.io/
+[EC2 instances]: https://en.wikipedia.org/wiki/Amazon_Elastic_Compute_Cloud
+[Amazon Web Services]: https://aws.amazon.com/
+
+## basics
+## contents
+## dependencies
+## examples
+## faq
