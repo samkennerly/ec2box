@@ -2,11 +2,11 @@
 
 The cloud is just someone else's computer.
 
-![Little Fluffy Clouds](ec2box.jpeg)
+![The clouds would catch the colors.](ec2box.jpeg)
 
 ## abstract
 
-Use [Terraform] to rent [EC2 instances] from [Amazon Web Services].
+Use [Terraform] to launch [EC2 instances] from [Amazon Web Services].
 
 [Terraform]: https://www.terraform.io/
 [EC2 instances]: https://en.wikipedia.org/wiki/Amazon_Elastic_Compute_Cloud
@@ -22,7 +22,27 @@ Use [Terraform] to rent [EC2 instances] from [Amazon Web Services].
 [use it as a template]: https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template
 [Terminal]: https://en.wikipedia.org/wiki/Command-line_interface
 
-## contents
+## commands
+
+| command                 | what does it do?  |
+| ----                    | ----  |
+| `init FOLDER`           |       |
+| `plan FOLDER`           | Show what `apply FOLDER` intends to do. Don't do it. |
+| `apply FOLDER`          | Update infrastructure to match `FOLDER/main.tf`.  |
+| `taint THING`           | Mark `thing` as ??? |
+| `untaint THING`         | Mark `thing` as OK.  |
+| `destroy THING`         | Deactivate `thing`.  |
+| `version`               | Show version for plugins and Terraform itself. |
+| `fmt FOLDER`            | Autoformat all `.tf` files in `FOLDER`. |
+
 ## dependencies
 ## examples
 ## faq
+
+
+[AWS Provider]
+
+[AWS examples]
+
+[AWS Provider]: https://www.terraform.io/docs/providers/aws/index.html
+[AWS examples]: https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples
