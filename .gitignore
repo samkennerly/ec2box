@@ -1,10 +1,11 @@
-# Apple debris
+# Apple
 .DS_Store*
 .Spotlight-*
 .Trashes
 .fseventsd
 Thumbs.db
 
-# Terraform state
+# Terraform
+bin/terraform
 .terraform
 *.tfstate*
