@@ -1,8 +1,8 @@
 # ec2box (UNDER CONSTRUCTION)
 
-The cloud is just someone else's computer.
+There is no cloud. It's just someone else's computer.
 
-![The clouds would catch the colors.](ec2box.jpeg)
+<img alt="I am the Architect" src="poster.jpeg" title="It's more fun to compute.">
 
 ## abstract
 
