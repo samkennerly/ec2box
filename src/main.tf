@@ -1,3 +1,8 @@
+terraform {
+  backend "local" {
+    path = "terraform.tfstate"
+  }
+}
 
 provider "aws" {
   profile = var.profile
