@@ -2,12 +2,15 @@ terraform {
   backend "local" {
     path = "terraform.tfstate"
   }
+  required_providers {
+    aws = "~> 2.44"
+  }
+  required_version = "~> 0.12"
 }
 
 provider "aws" {
-  profile = var.profile
+  profile = var.default
   region  = var.region
-  version = "~> 2.44" # AWS plugin version to install
 }
 
 resource "aws_instance" "ec2box" {
