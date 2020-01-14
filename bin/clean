@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # Autoformat and validate code in selected folder.
 
-folder=${1:-'src'}
+folder=${1:-'staging'}
 
 echo "Clean .tf files in $folder"
 terraform fmt "$folder" &&
