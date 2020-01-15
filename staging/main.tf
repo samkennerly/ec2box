@@ -6,7 +6,7 @@ terraform {
   required_version = "~> 0.12"
 }
 
-# Local variables
+# Terraform local values
 locals {
   folder     = "${path.module}/../etc"
   public_key = file("${local.folder}/id_rsa.pub")
@@ -22,12 +22,20 @@ provider "aws" {
   profile = var.profile
   region  = var.region
 }
+
+# SSH public key
 resource "aws_key_pair" "ec2box" {
   key_name   = var.name
   public_key = local.public_key
 }
 
-# AWS security group for EC2 instances
+# CloudWatch Logs
+resource "aws_cloudwatch_log_group" "ec2box" {
+  name = var.name
+  retention_in_days = 365
+}
+
+# EC2 firewall
 resource "aws_security_group" "ec2box" {
   description = "Allow SSH login and all outbound connections"
   name        = var.name
@@ -60,3 +68,26 @@ resource "aws_instance" "ec2box" {
     volume_size = var.gb
   }
 }
+
+# IAM role
+#data "aws_iam_policy_document" "write_logs" {
+#
+#  # CloudWatch Logs
+#  statement {
+#    actions = [
+#      "logs:CreateLogGroup",
+#      "logs:CreateLogStream",
+#      "logs:PutLogEvents",
+#      "logs:DescribeLogStreams"
+#    ]
+#    resources = ["arn:aws:logs:*:*:*"]
+#  }
+#}
+
+
+
+
+
+
+
+
