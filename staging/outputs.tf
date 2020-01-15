@@ -1,9 +1,18 @@
-output "id" {
-  value = aws_instance.ec2box.id
+output "address" {
+  description = "SSH to this address to login"
+  value       = "${local.user_vars.ec2user}@${aws_instance.ec2box.public_dns}"
+}
+output "ami" {
+  description = "Amazon Machine Image"
+  value       = aws_instance.ec2box.ami
 }
 output "arn" {
   description = "Amazon Resource Name"
   value       = aws_instance.ec2box.arn
+}
+output "name" {
+  description = "List of attached tags"
+  value       = aws_instance.ec2box.tags.Name
 }
 output "private_ip" {
   description = "Private IP address"
@@ -16,10 +25,6 @@ output "public_ip" {
 output "state" {
   description = "Is this thing on?"
   value       = aws_instance.ec2box.instance_state
-}
-output "tags" {
-  description = "List of attached tags"
-  value       = aws_instance.ec2box.tags
 }
 output "type" {
   description = "What kind of computer is it?"
