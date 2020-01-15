@@ -1,4 +1,12 @@
+# Terraform setup
+terraform {
+  required_providers {
+    aws   = "~> 2.44"
+  }
+  required_version = "~> 0.12"
+}
 
+# Local variables
 locals {
   folder     = "${path.module}/../etc"
   public_key = file("${local.folder}/id_rsa.pub")
@@ -9,21 +17,17 @@ locals {
   }
 }
 
-terraform {
-  required_providers {
-    aws   = "~> 2.44"
-  }
-  required_version = "~> 0.12"
-}
+# AWS credentials
 provider "aws" {
   profile = var.profile
   region  = var.region
 }
-
 resource "aws_key_pair" "ec2box" {
   key_name   = var.name
   public_key = local.public_key
 }
+
+# AWS security group for EC2 instances
 resource "aws_security_group" "ec2box" {
   description = "Allow SSH login and all outbound connections"
   name        = var.name
@@ -41,6 +45,8 @@ resource "aws_security_group" "ec2box" {
     to_port     = 22
   }
 }
+
+# EC2 instance
 resource "aws_instance" "ec2box" {
   ami             = lookup(var.amis, var.region)
   instance_type   = var.type
