@@ -1,3 +1,4 @@
+
 variable "amis" {
   default = {
     "eu-west-1" = "ami-0713f98de93617bb4"
@@ -9,6 +10,10 @@ variable "amis" {
 variable "gb" {
   default     = "8"
   description = "Root volume size (GB)"
+}
+variable "name" {
+  default     = "ec2box"
+  description = "Name tag for EC2 instance"
 }
 variable "profile" {
   default     = "default"
