@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
-# Example startup script.
+#!/usr/bin/env ruby
+# Example launch script.
 
-tee "LEEROOOOOOOOOOOOOOY JENKINS" > /tmp/leeroy.txt
+puts "LEER" + "O" * 42 + "Y NGHJENKINS"
