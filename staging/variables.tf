@@ -24,6 +24,6 @@ variable "region" {
   description = "Launch EC2 instance in this AWS region"
 }
 variable "type" {
-  default     = "t2.micro"
+  default     = "t3.micro"
   description = "EC2 instance type"
 }
