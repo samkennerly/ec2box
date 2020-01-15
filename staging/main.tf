@@ -1,7 +1,7 @@
 # Terraform setup
 terraform {
   required_providers {
-    aws   = "~> 2.44"
+    aws = "~> 2.44"
   }
   required_version = "~> 0.12"
 }
@@ -11,7 +11,7 @@ locals {
   folder     = "${path.module}/../etc"
   public_key = file("${local.folder}/id_rsa.pub")
   user_data  = templatefile("${local.folder}/user_data", local.user_vars)
-  user_vars  = {
+  user_vars = {
     awslogs = file("${local.folder}/awslogs.conf")
     ec2user = "ec2-user"
   }
@@ -31,7 +31,7 @@ resource "aws_key_pair" "ec2box" {
 
 # CloudWatch Logs
 resource "aws_cloudwatch_log_group" "ec2box" {
-  name = var.name
+  name              = var.name
   retention_in_days = 365
 }
 
@@ -56,13 +56,14 @@ resource "aws_security_group" "ec2box" {
 
 # EC2 instance
 resource "aws_instance" "ec2box" {
-  ami             = lookup(var.amis, var.region)
-  instance_type   = var.type
-  key_name        = aws_key_pair.ec2box.key_name
-  security_groups = [aws_security_group.ec2box.name]
-  tags            = { Name = var.name }
-  user_data       = local.user_data
-  volume_tags     = { Name = var.name }
+  ami                  = lookup(var.amis, var.region)
+  iam_instance_profile = aws_iam_instance_profile.ec2box.name
+  instance_type        = var.type
+  key_name             = aws_key_pair.ec2box.key_name
+  security_groups      = [aws_security_group.ec2box.name]
+  tags                 = { Name = var.name }
+  user_data            = local.user_data
+  volume_tags          = { Name = var.name }
 
   root_block_device {
     volume_size = var.gb
@@ -70,19 +71,42 @@ resource "aws_instance" "ec2box" {
 }
 
 # IAM role
-#data "aws_iam_policy_document" "write_logs" {
-#
-#  # CloudWatch Logs
-#  statement {
-#    actions = [
-#      "logs:CreateLogGroup",
-#      "logs:CreateLogStream",
-#      "logs:PutLogEvents",
-#      "logs:DescribeLogStreams"
-#    ]
-#    resources = ["arn:aws:logs:*:*:*"]
-#  }
-#}
+resource "aws_iam_role" "ec2box" {
+  assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
+  description        = "${var.name} assumes this role when launched."
+  name               = var.name
+}
+resource "aws_iam_role_policy" "ec2box" {
+  name   = aws_iam_role.ec2box.name
+  role   = aws_iam_role.ec2box.id
+  policy = data.aws_iam_policy_document.ec2box.json
+}
+resource "aws_iam_instance_profile" "ec2box" {
+  name = aws_iam_role.ec2box.name
+  role = aws_iam_role.ec2box.id
+}
+data "aws_iam_policy_document" "ec2box" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogStreams"
+    ]
+    resources = ["arn:aws:logs:*:*:*"]
+  }
+}
+data "aws_iam_policy_document" "ec2_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      identifiers = ["ec2.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
+
 
 
 
