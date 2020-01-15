@@ -12,7 +12,7 @@ locals {
   public_key = file("${local.folder}/id_rsa.pub")
   user_data  = templatefile("${local.folder}/user_data", local.user_vars)
   user_vars = {
-    awslogs = file("${local.folder}/awslogs.conf")
+    awslogs = templatefile("${local.folder}/awslogs.conf", { name = var.name })
     ec2user = "ec2-user"
   }
 }
@@ -73,7 +73,7 @@ resource "aws_instance" "ec2box" {
 # IAM role
 resource "aws_iam_role" "ec2box" {
   assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
-  description        = "${var.name} assumes this role when launched."
+  description        = "${var.name} EC2 instances assume this role when launched."
   name               = var.name
 }
 resource "aws_iam_role_policy" "ec2box" {
@@ -81,9 +81,19 @@ resource "aws_iam_role_policy" "ec2box" {
   role   = aws_iam_role.ec2box.id
   policy = data.aws_iam_policy_document.ec2box.json
 }
+
 resource "aws_iam_instance_profile" "ec2box" {
   name = aws_iam_role.ec2box.name
   role = aws_iam_role.ec2box.id
+}
+data "aws_iam_policy_document" "ec2_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      identifiers = ["ec2.amazonaws.com"]
+      type        = "Service"
+    }
+  }
 }
 data "aws_iam_policy_document" "ec2box" {
   statement {
@@ -94,15 +104,6 @@ data "aws_iam_policy_document" "ec2box" {
       "logs:DescribeLogStreams"
     ]
     resources = ["arn:aws:logs:*:*:*"]
-  }
-}
-data "aws_iam_policy_document" "ec2_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-    principals {
-      identifiers = ["ec2.amazonaws.com"]
-      type        = "Service"
-    }
   }
 }
 
