@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# Example startup script.
+
+tee "LEEROOOOOOOOOOOOOOY JENKINS" > /tmp/leeroy.txt
