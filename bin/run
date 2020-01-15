@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+# Run a command on an EC2 instance. To login, run with no arguments.
+
+set -x
+ssh $(terraform output address) "$@"
