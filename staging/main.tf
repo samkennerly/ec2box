@@ -14,6 +14,7 @@ locals {
   user_vars = {
     awslogs = templatefile("${local.folder}/awslogs.conf", { name = var.name })
     ec2user = "ec2-user"
+    launch  = file("${local.folder}/launch")
   }
 }
 

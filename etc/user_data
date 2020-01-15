@@ -1,18 +1,28 @@
 #!/usr/bin/env bash
 # Startup script for EC2 instance. Commands will be run as root!
 
+set -x
+
 echo 'EC2BOX Install security updates'
 yum -y update
 
-echo 'EC2BOX Install, configure, and start CloudWatch Logs'
-yum -y install awslogs &&
-tee /etc/awslogs/awslogs.conf <<- EOF &&
+echo "EC2BOX Install, configure and start AWS logs daemon"
+yum -y install awslogs
+tee /etc/awslogs/awslogs.conf <<- EOF
 ${awslogs}
 EOF
 systemctl enable --now awslogsd
 
-echo "EC2BOX Run as ${ec2user}@$HOSTNAME"
-cd /home/${ec2user}
-su - ${ec2user}
+echo 'EC2BOX Install Ruby'
+amazon-linux-extras install -y ruby2.6
+
+echo "EC2BOX Write launch script for ${ec2user}"
+script="/home/${ec2user}/launch"
+cat > $script <<-EOF &&
+${launch}
+EOF
+chown ${ec2user} $script &&
+chmod 700 $script
 
 echo "EC2BOX Time's up. Let's do this."
+sudo -u ${ec2user} $script
