@@ -10,6 +10,10 @@ output "arn" {
   description = "Amazon Resource Name"
   value       = aws_instance.ec2box.arn
 }
+output "id" {
+  description = "EC2 instance ID"
+  value       = aws_instance.ec2box.id
+}
 output "name" {
   description = "List of attached tags"
   value       = aws_instance.ec2box.tags.Name
