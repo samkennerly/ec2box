@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 # Autoformat and validate Terraform code in selected folder.
 
+folder="${1:-staging}"
+
 set -x
-terraform fmt "$1"
-terraform validate "$1"
+terraform fmt "$folder"
+terraform validate "$folder"
