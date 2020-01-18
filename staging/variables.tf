@@ -7,13 +7,17 @@ variable "amis" {
   }
   description = "Amazon Machine Image for each region"
 }
+variable "ec2user" {
+  default     = "ec2-user"
+  description = "Run launch script as this user"
+}
 variable "gb" {
   default     = "8"
   description = "Root volume size (GB)"
 }
 variable "name" {
   default     = "ec2box"
-  description = "Name tag for EC2 instance"
+  description = "Name tag for ec2box"
 }
 variable "profile" {
   default     = "default"
@@ -21,7 +25,11 @@ variable "profile" {
 }
 variable "region" {
   default     = "us-east-1"
-  description = "Launch EC2 instance in this AWS region"
+  description = "Launch ec2box in this AWS region"
+}
+variable "script" {
+  default     = "launch"
+  description = "Run this script when launching an ec2box"
 }
 variable "type" {
   default     = "t3.micro"

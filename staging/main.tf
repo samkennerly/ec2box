@@ -6,15 +6,15 @@ terraform {
   required_version = "~> 0.12"
 }
 
-# Terraform local values
+# Pre-calculated values
 locals {
   folder     = "${path.module}/../etc"
   public_key = file("${local.folder}/id_rsa.pub")
   user_data  = templatefile("${local.folder}/user_data", local.user_vars)
   user_vars = {
     awslogs = templatefile("${local.folder}/awslogs.conf", { name = var.name })
-    ec2user = "ec2-user"
-    launch  = file("${local.folder}/launch")
+    ec2user = var.ec2user
+    script  = file("${local.folder}/${var.script}")
   }
 }
 

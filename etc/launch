@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 # Example launch script.
 
-puts "LEER" + "O" * 42 + "Y NGHJENKINS"
+puts "LEER" + "O" * 42 + "Y JENKINS"
