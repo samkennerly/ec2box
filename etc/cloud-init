@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # EC2 "user data" template.
 
-set -x
-
 echo "EC2BOX Update system packages"
 apt-get -y update
 
