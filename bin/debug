@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
 # Start a terraform console for debugging.
 
-set -x
-terraform console "${1:-staging}"
+terraform console src

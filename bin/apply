@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-# Update Terraform state.
 
 set -x
-terraform apply "${1:-staging}"
+terraform apply test
