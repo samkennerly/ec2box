@@ -5,6 +5,12 @@ provider "aws" {
 }
 
 module "test" {
-  source = "../src"
   name   = "test"
+  source = "../src"
+}
+
+module "slippers" {
+  name = "slippers"
+  launch = "${path.module}/slippers"
+  source = "../src"
 }

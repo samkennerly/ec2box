@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+DELAY = 2
+HOME = ENV['HOME']
+
+while true
+  puts "There's no place like #{HOME}"
+  sleep DELAY
+end
