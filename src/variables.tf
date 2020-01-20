@@ -2,13 +2,13 @@ variable "ami" {
   default     = "ami-04b9e92b5572fa0d1"
   description = "Amazon Machine Image ID"
 }
-variable "cloud-init" {
-  default     = "etc/cloud-init"
-  description = "Path to cloud-init template file"
-}
-variable "gb" {
+variable "diskgb" {
   default     = "8"
   description = "Root volume size (GB)"
+}
+variable "ec2type" {
+  default     = "t3.micro"
+  description = "EC2 instance type"
 }
 variable "name" {
   default     = "ec2box"
@@ -26,9 +26,9 @@ variable "public_key" {
   default     = "etc/id_rsa.pub"
   description = "Path to public SSH key"
 }
-variable "type" {
-  default     = "t3.micro"
-  description = "EC2 instance type"
+variable "template" {
+  default     = "etc/cloud-init"
+  description = "Path to cloud-init template file"
 }
 variable "user" {
   default     = "ubuntu"

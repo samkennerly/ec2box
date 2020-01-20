@@ -9,8 +9,9 @@ terraform {
 # Read local files
 locals {
   public_key = file(var.public_key)
-  user_data  = templatefile(var.cloud-init, local.user_vars)
+  user_data  = templatefile(var.template, local.user_vars)
   user_vars = {
+    awslogs = "/home/${var.user}/awslogs.json"
     install = file(var.install)
     launch  = file(var.launch)
     script  = "/home/${var.user}/${basename(var.launch)}"
@@ -90,7 +91,7 @@ resource "aws_iam_instance_profile" "ec2box" {
 resource "aws_instance" "ec2box" {
   ami                  = var.ami
   iam_instance_profile = aws_iam_instance_profile.ec2box.name
-  instance_type        = var.type
+  instance_type        = var.ec2type
   key_name             = aws_key_pair.ec2box.key_name
   security_groups      = [aws_security_group.ec2box.name]
   tags                 = { Name = var.name }
@@ -98,6 +99,6 @@ resource "aws_instance" "ec2box" {
   volume_tags          = { Name = var.name }
 
   root_block_device {
-    volume_size = var.gb
+    volume_size = var.diskgb
   }
 }
