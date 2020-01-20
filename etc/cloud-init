@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Cloud-init "user data" template.
-# https://cloudinit.readthedocs.io/en/latest/
+# EC2 "user data" template.
 
 set -x
 
@@ -10,7 +9,7 @@ apt-get -y update
 echo "EC2BOX Install, configure and start CloudWatch Logs agent"
 wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb &&
 dpkg -i -E ./amazon-cloudwatch-agent.deb &&
-tee /etc/awslogs.json <<- EOF &&
+tee ${awslogs} <<- EOF &&
 {
   "agent": {
     "run_as_user": "${user}"
@@ -30,17 +29,17 @@ tee /etc/awslogs.json <<- EOF &&
   }
 }
 EOF
-amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/etc/awslogs.json -s
+amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:${awslogs} -s
 
 echo "EC2BOX Install extra software"
 ${install}
 
-echo "EC2BOX Write launch script"
+echo "EC2BOX Write ${script}"
 cat > ${script} <<- EOF &&
 ${launch}
 EOF
 chown ${user} ${script} &&
 chmod 700 ${script}
 
-echo "EC2BOX Time's up. Let's do this."
-sudo -u ${user} ${script}
+echo "EC2BOX Run ${script} in background as ${user}."
+sudo --login --user ${user} bash -c '${script} 2>&1 | logger -t ${name} &'

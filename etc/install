@@ -1,5 +1,4 @@
-#!/usr/bin/env sh
-# Installation script.
+# Install any required packages.
 
 apt-get -y install \
   python3.7 \
