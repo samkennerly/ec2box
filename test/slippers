@@ -1,9 +1,8 @@
 #!/usr/bin/env ruby
 
-DELAY = 2
 HOME = ENV['HOME']
 
 while true
-  puts "There's no place like #{HOME}"
-  sleep DELAY
+  puts "#{Time.now.utc} There's no place like #{HOME}"
+  sleep 1
 end
