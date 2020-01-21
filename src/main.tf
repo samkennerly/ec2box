@@ -8,7 +8,6 @@ terraform {
 
 # Read local files
 locals {
-  public_key = file(var.public_key)
   user_data  = templatefile(var.template, local.user_vars)
   user_vars = {
     awslogs = "/home/${var.user}/awslogs.json"
@@ -23,7 +22,7 @@ locals {
 # Upload public SSH key to AWS
 resource "aws_key_pair" "ec2box" {
   key_name   = var.name
-  public_key = local.public_key
+  public_key = file(var.public_key)
 }
 
 # Create CloudWatch Log group
@@ -72,6 +71,7 @@ resource "aws_iam_role_policy" "ec2box" {
   policy = data.aws_iam_policy_document.ec2box.json
 }
 data "aws_iam_policy_document" "ec2box" {
+  source_json = file(var.policy)
   statement {
     actions = [
       "logs:CreateLogGroup",

@@ -22,6 +22,10 @@ variable "launch" {
   default     = "etc/launch"
   description = "Path to launch script"
 }
+variable "policy" {
+  default     = "etc/policy.json"
+  description = "Path to IAM policy JSON file"
+}
 variable "public_key" {
   default     = "etc/id_rsa.pub"
   description = "Path to public SSH key"
