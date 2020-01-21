@@ -1,5 +1,5 @@
 # Install any required packages.
 
 apt-get -y install \
-  python3.7 \
+  awscli \
   ruby2.5
