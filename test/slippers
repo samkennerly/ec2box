@@ -4,5 +4,6 @@ HOME = ENV['HOME']
 
 while true
   puts "#{Time.now.utc} There's no place like #{HOME}"
-  sleep 10
+  STDOUT.flush
+  sleep 1
 end
