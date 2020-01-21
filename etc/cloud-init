@@ -19,7 +19,8 @@ tee ${awslogs} <<- EOF &&
           {
             "file_path": "/var/log/syslog",
             "log_group_name": "${name}",
-            "log_stream_name": "{hostname}"
+            "log_stream_name": "{hostname}",
+            "timezone": "UTC"
           }
         ]
       }
