@@ -8,7 +8,7 @@ terraform {
 
 # Read local files
 locals {
-  user_data  = templatefile(var.template, local.user_vars)
+  user_data = templatefile(var.template, local.user_vars)
   user_vars = {
     awslogs = "/home/${var.user}/awslogs.json"
     install = file(var.install)
