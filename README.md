@@ -2,7 +2,10 @@
 
 There is no cloud. It's just someone else's computer.
 
-<img alt="I am the Architect" src="poster.jpeg" title="It's more fun to compute.">
+<img
+  alt="I am the Architect."
+  src="https://raw.githubusercontent.com/samkennerly/posters/master/ec2box.jpeg"
+  title="It's more fun to compute.">
 
 ## abstract
 
