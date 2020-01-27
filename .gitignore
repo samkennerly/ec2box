@@ -1,3 +1,7 @@
+# Secrets!
+ec2box_rsa
+!ec2box_rsa.pub
+
 # Apple
 .DS_Store*
 .Spotlight-*
