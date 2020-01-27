@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
-# Run a command on an EC2 instance. To login, run with no arguments.
+# Run a command remotely on an EC2 instance. Run with no arguments to login.
 
-set -e
-box=${1:-test}
+boxname=${1:-leeroy}
+address=$(terraform output -json $boxname | jq --raw-output '.address')
 
-ssh $(terraform output -json $box | jq --raw-output '.address') ${@:2}
+ssh "$address" ${@:2}

@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
+# Autoformat and validate all Terraform files in this repo.
 
-set -x
 terraform fmt
 terraform fmt test
 terraform validate test

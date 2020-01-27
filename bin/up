@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# Ensure modules are updated. Apply any infrastructure changes.
 
 set -x
 terraform init test
