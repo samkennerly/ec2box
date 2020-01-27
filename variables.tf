@@ -27,7 +27,7 @@ variable "policy" {
   description = "Path to IAM policy JSON file"
 }
 variable "public_key" {
-  default     = "etc/id_rsa.pub"
+  default     = "etc/ec2box_rsa.pub"
   description = "Path to public SSH key"
 }
 variable "template" {
