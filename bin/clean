@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
 set -x
-terraform fmt src
+terraform fmt
 terraform fmt test
 terraform validate test
