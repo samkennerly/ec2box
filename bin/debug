@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-# Start a terraform console for debugging.
-
-terraform console src
