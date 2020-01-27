@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
-# Destroy all Terraform-managed infrastructure.
+# Destroy all Terraform-managed test resources.
 
-
+terraform destroy test
