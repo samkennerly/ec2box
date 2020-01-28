@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# Print to STDOUT every 1 second until something breaks.
 
 HOME = ENV['HOME']
 

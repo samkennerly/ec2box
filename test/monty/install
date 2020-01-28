@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+# Install Python3 and Bottle.
+
+apt-get -y install awscli python3.7
+pip install bottle==0.12.18

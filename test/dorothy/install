@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# Custom install script.
+
+apt-get -y install awscli ruby2.5
