@@ -1,5 +1,4 @@
-# Install any required packages.
+#!/usr/bin/env sh
+# Example install script.
 
-apt-get -y install \
-  awscli \
-  ruby2.5
+apt-get -y install awscli
