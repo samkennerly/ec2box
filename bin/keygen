@@ -1,8 +1,6 @@
 #!/usr/bin/env sh
-# Generate an RSA keypair for logging into EC2 instances.
-# Caution: Overwrites any existing keypair.
 
-keypath="${1:-etc/ec2box_rsa}"
+keypath="etc/ec2box_rsa"
 
-echo "Generate $keypath and $keypath.pub"
+echo "Generate RSA keypair $keypath and $keypath.pub"
 ssh-keygen -t rsa -b 2048 -C "ec2box" -f "$keypath"

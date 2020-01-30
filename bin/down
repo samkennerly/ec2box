@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
-# Destroy all Terraform-managed test resources.
 
-terraform destroy test
+folder=${1:-test}
+
+echo "Destroy all Terraform-managed resources in $folder"
+terraform destroy "$folder"

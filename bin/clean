@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
-# Autoformat and validate all Terraform files in this repo.
 
-terraform fmt
-terraform fmt test
-terraform validate test
+folder=${1:-test}
+
+echo "Clean Terraform files in $folder"
+terraform fmt "$folder"
+terraform validate "$folder"

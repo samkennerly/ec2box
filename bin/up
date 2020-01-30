@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
-# Ensure modules are updated. Apply any infrastructure changes.
 
-set -x
-terraform init test
-terraform apply test
+folder=${1:-test}
+
+echo "Initialize and update $folder resources"
+terraform init "$folder"
+terraform apply "$folder"

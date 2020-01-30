@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
-# Run a command remotely on an EC2 instance. Run with no arguments to login.
 
 keypath="etc/ec2box_rsa"
 boxname=${1:-leeroy}
 address=$(terraform output -json $boxname | jq --raw-output '.address')
 
+echo "SSH into $boxname at $address"
 ssh -i "$keypath" "$address" ${@:2}
