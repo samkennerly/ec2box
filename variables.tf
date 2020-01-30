@@ -31,10 +31,10 @@ variable "public_key" {
   description = "Path to public SSH key"
 }
 variable "template" {
-  default     = "etc/cloud-init"
+  default     = "etc/template"
   description = "Path to cloud-init template file"
 }
 variable "user" {
   default     = "ubuntu"
-  description = "Login as this user"
+  description = "Launch as this user"
 }

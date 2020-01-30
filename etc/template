@@ -7,7 +7,7 @@ apt-get -y update
 echo "EC2BOX Install, configure and start CloudWatch Logs agent"
 wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb &&
 dpkg -i -E ./amazon-cloudwatch-agent.deb &&
-tee ${awslogs} <<- EOF &&
+tee ${folder}/awslogs.json <<- EOF &&
 {
   "agent": {
     "run_as_user": "${user}"
@@ -28,17 +28,19 @@ tee ${awslogs} <<- EOF &&
   }
 }
 EOF
-amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:${awslogs} -s
+amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:${folder}/awslogs.json -s
 
-echo "EC2BOX Install extra software"
+echo "EC2BOX Write and run install script"
+cat > ${folder}/install <<- EOF &&
 ${install}
+EOF
+chmod 700 ${folder}/install &&
+${folder}/install
 
-echo "EC2BOX Write ${script}"
-cat > ${script} <<- EOF &&
+echo "EC2BOX Write and run launch script as ${user}"
+cat > ${folder}/launch <<- EOF &&
 ${launch}
 EOF
-chown ${user} ${script} &&
-chmod 700 ${script}
-
-echo "EC2BOX Run ${script} in background as ${user}."
-sudo --login --user ${user} bash -c '${script} 2>&1 | logger -t ${name} &'
+chown ${user} ${folder}/launch &&
+chmod 700 ${folder}/launch &&
+sudo --login --user ${user} bash -c '${folder}/launch 2>&1 | logger -t ${name} &'
