@@ -1,5 +1,11 @@
 # ec2box (UNDER CONSTRUCTION)
 
+## TODO
+
+- move commands -> portfolio tldrs/terraform.html
+- explain bin/ scripts. dependencies: OpenSSH, jq, ?
+- explain CloudWatch Logs + Ubuntu logger rotation
+
 There is no cloud. It's just someone else's computer.
 
 <img
