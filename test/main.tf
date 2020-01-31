@@ -3,13 +3,14 @@ provider "aws" {
   region  = var.region
 }
 module "leeroy" {
-  name    = "leeroy"
   ec2type = "t3.nano"
+  name    = "leeroy"
   source  = "./.."
 }
 module "dorothy" {
-  name    = "dorothy"
+  diskgb  = 10
   install = "${path.module}/dorothy/install"
   launch  = "${path.module}/dorothy/launch"
+  name    = "dorothy"
   source  = "./.."
 }
