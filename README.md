@@ -2,7 +2,6 @@
 
 ## TODO
 
-- move commands -> portfolio tldrs/terraform.html
 - explain bin/ scripts. dependencies: OpenSSH, jq, ?
 - explain CloudWatch Logs + Ubuntu logger rotation
 
@@ -62,22 +61,6 @@ Terraform can also store state [remotely] instead of using local files.
 [state]: https://www.terraform.io/docs/backends/state.html
 [remotely]: https://www.terraform.io/docs/state/remote.html
 
-## commands
-
-| command           | what does it do?  |
-| ----              | ----  |
-| `show`            | Show current state (might include secrets!)             |
-| `init FOLDER`     | Prepare a [backend], install [plugins], etc.        |
-| `plan FOLDER`     | Predict what `apply FOLDER` will do when you run it.    |
-| `apply FOLDER`    | Update resources to match contents of `FOLDER/main.tf`. |
-| `taint THING`     | Mark `thing` as broken or unsafe. |
-| `untaint THING`   | Mark `thing` as OK.  |
-| `destroy FOLDER`  | Deactivate every resource declared in `FOLDER`.  |
-| `validate FOLDER` | Check all `.tf` files in `FOLDER` for errors. \
-| `version`         | Show version for plugins and Terraform itself. |
-| `fmt FOLDER`      | Autoformat all `.tf` files in `FOLDER`. |
-| `console FOLDER`  | Start interactive console for debugging |
-| `output`          | Show all [outputs]. |
 
 [backend]: https://www.terraform.io/docs/backends/
 [plugins]: https://www.terraform.io/docs/commands/init.html#plugin-installation
@@ -112,10 +95,7 @@ Show public IP address of a box:
 23.555.42.808
 ```
 
-Time's up. [Let's do this].
-```sh
-> terraform apply -auto-approve -lock=true production
-```
+
 
 [Let's do this]: https://www.youtube.com/watch?v=jbq5dsQ-l9M
 
