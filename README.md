@@ -1,10 +1,5 @@
 # ec2box (UNDER CONSTRUCTION)
 
-## TODO
-
-- explain bin/ scripts. dependencies: OpenSSH, jq, ?
-- explain CloudWatch Logs + Ubuntu logger rotation
-
 There is no cloud. It's just someone else's computer.
 
 <img
@@ -14,38 +9,50 @@ There is no cloud. It's just someone else's computer.
 
 ## abstract
 
-Use [Terraform] to launch [EC2 instances] from [Amazon Web Services].
+An <dfn>ec2box</dfn> is an [AWS EC2 instance] equipped with its own:
 
-[Terraform]: https://www.terraform.io/
-[EC2 instances]: https://en.wikipedia.org/wiki/Amazon_Elastic_Compute_Cloud
-[Amazon Web Services]: https://aws.amazon.com/
+- [keypair] to enable [remote SSH login] to the box
+- [security group] to control network access to/from the box
+- [CloudWatch log group] to save and display log messages from the box
+- [IAM role], [policy], and [profile] to allow the box to use other AWS resources
+- [cloud-init] script to install software, run a launch script, and send log messages
+
+The `test` module launches example [free-tier] boxes.
+
+[AWS EC2 instance]: https://aws.amazon.com/ec2/
 
 ## basics
 
+1. Install [dependencies](#dependencies).
 1. Create a new repo [from this template].
 1. Open a [terminal] and `cd` to this folder.
+1. Run `bin/keygen` to generate an [RSA keypair].
+1. Run `bin/up test` to provision test resources.
+1. Run `bin/down test` to remove all test resources.
 
-- ???
+### boxes
 
-- install Terraform (it's one file)
+The [test](test) module includes example boxes.
+Each box runs a small example script:
 
-[from this template]: https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template
-[Terminal]: https://en.wikipedia.org/wiki/Command-line_interface
+| name | language | what does it do? |
+| ---- | -------- | ---------------- |
+| leeroy | bash | print a message to [STDOUT] |
+| dorothy | ruby | print messages to [STDOUT] in an [infinite loop] |
+
+
+
+- `leeroy` runs a [bash] script which prints a single message to [STDOUT].
+- `dorothy` runs a [Ruby] script which prints messages to STDOUT [indefinitely].
+
 
 ### credentials
 
-Terraform searches for credentials in several places:
+### state files
 
-1. [hard-coded] (this can be [dangerous])
-1. [environment variables]
-1. a [credentials file]
 
-[hard-coded]: https://www.terraform.io/docs/providers/aws/index.html#static-credentials
-[dangerous]: https://qz.com/674520/companies-are-sharing-their-secret-access-codes-on-github-and-they-may-not-even-know-it/
-[environment variables]: https://www.terraform.io/docs/providers/aws/index.html#environment-variables
-[credentials file]: https://www.terraform.io/docs/providers/aws/index.html#shared-credentials-file
 
-### state
+
 
 Terraform stores [state] in two files when it is [initialized]:
 ```sh
@@ -56,21 +63,44 @@ Terraform can also store state [remotely] instead of using local files.
 
 **Caution:** State files can contain secrets. Remember to [gitignore] them.
 
+[from this template]: https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template
+[Terminal]: https://en.wikipedia.org/wiki/Command-line_interface
+
 [initialized]: https://www.terraform.io/docs/commands/init.html
 [gitignore]: .gitignore
 [state]: https://www.terraform.io/docs/backends/state.html
 [remotely]: https://www.terraform.io/docs/state/remote.html
-
-
 [backend]: https://www.terraform.io/docs/backends/
-[plugins]: https://www.terraform.io/docs/commands/init.html#plugin-installation
 [outputs]: https://learn.hashicorp.com/terraform/getting-started/outputs
+
+## contents
+
+### [bin](bin) scripts
+### [etc](etc) config files
+### [test](test) module
+### [main.tf](main.tf)
+
 
 ## dependencies
 
-1. [Terraform] >= 0.12.19
+1. [AWS credentials]
+1. [Terraform] >= 0.12
+1. [OpenSSH] to run `bin/keygen` and `bin/login`
+1. [jq] to run `bin/login`
+
+Terraform searches for AWS credentials in several places:
+
+1. [hard-coded] (this can be [dangerous])
+1. [environment variables]
+1. a [credentials file]
 
 [Terraform]: https://www.terraform.io/downloads.html
+
+[hard-coded]: https://www.terraform.io/docs/providers/aws/index.html#static-credentials
+[dangerous]: https://qz.com/674520/companies-are-sharing-their-secret-access-codes-on-github-and-they-may-not-even-know-it/
+[environment variables]: https://www.terraform.io/docs/providers/aws/index.html#environment-variables
+[credentials file]: https://www.terraform.io/docs/providers/aws/index.html#shared-credentials-file
+
 
 ## examples
 
@@ -101,9 +131,22 @@ Show public IP address of a box:
 
 ## faq
 
-[AWS Provider]
+### How do I view log messages?
 
-[AWS examples]
+- CloudWatch console
+- Ubuntu logger
+- log rotation
 
-[AWS Provider]: https://www.terraform.io/docs/providers/aws/index.html
-[AWS examples]: https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples
+### How do I deploy code to a box?
+
+### Do I need to use remote state?
+
+### Where are the official docs?
+
+- Terraform [docs]
+- Terraform AWS [provider docs]
+- Terraform AWS [example modules]
+
+[docs]: https://www.terraform.io/docs/index.html
+[provider docs]: https://www.terraform.io/docs/providers/aws/index.html
+[example modules]: https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples
