@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-keypath="etc/ec2box_rsa"
+keypath=${1:-etc/ec2box_rsa}
 
 echo "Generate RSA keypair $keypath and $keypath.pub"
 ssh-keygen -t rsa -b 2048 -C "ec2box" -f "$keypath"
