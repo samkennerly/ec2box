@@ -9,49 +9,48 @@ There is no cloud. It's just someone else's computer.
 
 ## abstract
 
-`ec2box` uses [Terraform] to launch [AWS EC2 instances], each with its own
+`ec2box` uses [Terraform] to launch [AWS EC2 instances].
+Each <q>box</q> includes its own:
 
-- [keypair] to enable [remote SSH login]
+- [keypair] to enable remote SSH login
 - [security group] to control network access
-- [CloudWatch log group] to save and display log messages
+- [CloudWatch log group] to store and read log messages
 - [IAM role], [policy], and [profile] to access other AWS resources
 - [cloud-init] template to configure logs, install software, and run a script
 
-The [test] module launches example [free-tier] boxes:
+The [test] module launches example [free-tier] Ubuntu boxes:
 
 | box name | script language | what does it do? |
 | ---- | -------- | ---------------- |
-| leeroy | bash | print a message to [STDOUT] |
-| dorothy | ruby | print messages to [STDOUT] in an [infinite loop] |
+| leeroy | bash | print a message |
+| dorothy | ruby | print messages in an [infinite loop] |
 
 [EC2 instance]: https://aws.amazon.com/ec2/
 
 ## basics
 
-Create and destroy some test boxes:
-
-1. Ensure AWS [credentials] exist.
 1. Create a new repo [from this template].
-1. Open a [terminal] and `cd` to this folder.
-1. Edit [terraform.tfvars] to choose a [profile] and [region].
-1. Run `bin/keygen` to generate an [RSA keypair].
+1. Open a [terminal] and `cd` to this [folder].
+1. Ensure Terraform can find AWS credentials.
+1. Edit [terraform.tfvars] to set input variables.
+1. Run `bin/keygen` to generate an RSA keypair.
 1. Run `bin/up test` to launch all example boxes.
-1. Read [CloudWatch logs] to ensure the boxes worked.
+1. View CloudWatch logs to ensure the boxes worked.
 1. Run `bin/down test` to destroy all example boxes.
 
-Terraform stores [state] in two files when it is [initialized]:
+Terraform stores [state files] in this folder when it is [initialized]:
 ```sh
 terraform.tfstate
 terraform.tfstate.backup
 ```
-State files can contain secrets! Remember to [gitignore] them or use [remote state].
+State files can contain secrets! Be sure to [gitignore] them or use [remote state].
 
 ### credentials
 
-Terraform searches for AWS credentials in this order:
+Terraform [searches] for AWS credentials in this order:
 
 1. [static credentials]. These can be [dangerous], so `ec2box` does not use them.
-1. [environment variables]
+1. [environment variables] passed to `terraform` commands:
     ```sh
     AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY
@@ -61,49 +60,40 @@ Terraform searches for AWS credentials in this order:
     ~/.aws/config
     ~/.aws/credentials
     ```
-1. an [IAM role] if Terraform is run from an AWS resource
+1. an [IAM role] if Terraform is run from an AWS resource.
 
-### `terraform.tfvars`
+### inputs
 
 The [test] module requires [input variables]. Edit [terraform.tfvars] to change them.
 
-- edit <dfn>profile</dfn> to read non-default AWS credentials from a file
-- edit <dfn>region</dfn> to launch boxes in a specific AWS region
+- <dfn>profile</dfn> selects an [AWS profile] to use for credentials
+- <dfn>region</dfn> selects an [AWS region] in which to launch boxes
 
 ### keypairs
 
+`ec2box` uses [SSH keys] to remotely control running boxes.
 
-
-Remote login to a running box requires two keys: one public and one private.
-`ec2box` automatically uploads the public key (`.pub` file) to AWS.
-
-
-
-The `bin/keygen` script generates and saves an [RSA keypair] to:
+Run `bin/keygen` to generate keys, or copy an existing [RSA keypair] here:
 ```sh
 etc/ec2box_rsa
 etc/ec2box_rsa.pub
 ```
-
-
-**The private key should be kept secret at all times.**
-Be sure to [gitignore] it.
-
-
-
-
-
-
+Terraform will upload a copy of the public key (`.pub` file) to AWS when a box is created or when the public key changes. **The private key should be kept secret.** Be sure to [gitignore] it.
 
 ### logs
 
-Each box automatically starts a [CloudWatch agent] which sends logs to AWS.
+When a box is launched, its cloud-init [template] configures and starts automatic logging:
 
-Logs are displayed in the [CloudWatch console].
-Each `ec2box`
+- [cloud-init] sends logs to `/var/log/syslog` and starts an AWS [CloudWatch agent].
+- The agent creates a [log stream] and begins streaming from  `/var/log/syslog`.
+- The launch script prints errors to STDERR and all other messages to STDOUT.
+- The shell redirects STDERR and STDOUT to the Ubuntu [logger].
+- The logger saves logs to `/var/log/syslog`.
 
+All logs are (hopefully) visible in the AWS [CloudWatch console].
+Each new EC2 instance creates a new [log stream].
+Streams are grouped by box name, e.g. `leeroy` boxes send logs to the `leeroy` group.
 
-See the [cloud-init template] for configuration details.
 
 
 
