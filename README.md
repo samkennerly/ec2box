@@ -29,6 +29,8 @@ The [test] module launches example [free-tier] Ubuntu boxes:
 
 ## basics
 
+To launch, inspect, and deactivate some test boxes:
+
 1. Create a new repo [from this template].
 1. Open a [terminal] and `cd` to this [folder].
 1. Ensure Terraform can find AWS credentials.
@@ -36,31 +38,25 @@ The [test] module launches example [free-tier] Ubuntu boxes:
 1. Run `bin/keygen` to generate an RSA keypair.
 1. Run `bin/up test` to launch all example boxes.
 1. View CloudWatch logs to ensure the boxes worked.
-1. Run `bin/down test` to destroy all example boxes.
-
-Terraform stores [state files] in this folder when it is [initialized]:
-```sh
-terraform.tfstate
-terraform.tfstate.backup
-```
-State files can contain secrets! Be sure to [gitignore] them or use [remote state].
+1. Run `bin/login` to login to a box remotely with SSH.
+1. Run `bin/down test` to destroy all example resources.
 
 ### credentials
 
 Terraform [searches] for AWS credentials in this order:
 
-1. [static credentials]. These can be [dangerous], so `ec2box` does not use them.
-1. [environment variables] passed to `terraform` commands:
+1. [Static credentials] in `.tf` files can be [dangerous], so `ec2box` does not use them.
+1. [Environment variables] can be passed to `terraform` commands:
     ```sh
     AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY
     ```
-1. an AWS [profile] and [credentials file]:
+1. [Credential files] can be stored in a `terraform` user's home folder:
     ```sh
     ~/.aws/config
     ~/.aws/credentials
     ```
-1. an [IAM role] if Terraform is run from an AWS resource.
+1. An [IAM role] can authorize `terraform` commands run from an AWS resource.
 
 ### inputs
 
@@ -80,6 +76,7 @@ etc/ec2box_rsa.pub
 ```
 Terraform will upload a copy of the public key (`.pub` file) to AWS when a box is created or when the public key changes. **The private key should be kept secret.** Be sure to [gitignore] it.
 
+
 ### logs
 
 When a box is launched, its cloud-init [template] configures and starts automatic logging:
@@ -94,8 +91,14 @@ Cloud-init, system, and launch script logs are (hopefully) visible in the AWS [C
 
 To find launch script logs in the stream, search by the box's name.
 
+### state files
 
-
+Terraform will create [state files] when the `test` module is [initialized]:
+```sh
+terraform.tfstate
+terraform.tfstate.backup
+```
+State files can contain secrets! Be sure to [gitignore] them or use [remote state] instead.
 
 
 
@@ -126,11 +129,40 @@ To find launch script logs in the stream, search by the box's name.
 
 ## contents
 
-### [bin](bin) scripts
-### [etc](etc) config files
-### [test](test) module
-### [main.tf](main.tf)
+These `.tf` files tell Terraform what to include with each box:
 
+- [main.tf] declares AWS resources to be provisioned for each box.
+- [outputs.tf] declares values to be returned when a box is created.
+- [variables.tf] declares required inputs and sets default values.
+
+### [bin](bin) folder
+
+Optional convenience scripts for common Terraform commands.
+
+- `bin/clean [FOLDER]` reformats and validates all `.tf` files in a folder.
+- `bin/down [FOLDER]` destroys all resources declared in a folder.
+- `bin/keygen [KEYPATH]` generates RSA key files named `KEYPATH` and `KEYPATH.pub`.
+- `bin/login [BOXNAME]` uses SSH to login to an EC2 instance.
+- `bin/up [FOLDER]` creates or updates all resources declared in a folder.
+
+### [etc](etc) folder
+
+Default values for newly-created boxes. Each can be overridden.
+
+- `ec2box_rsa` is an RSA private key which should be [gitignored].
+- `ec2box_rsa.pub` is the RSA public key corresponding to `ec2box_rsa`.
+- `install` is a script which installs software on a new box.
+- `launch` is launched in the [background] when a box is ready to use.
+- `policy.json` is an [IAM policy] which grants AWS permissions to a box.
+- `template` is a [template file] for a [cloud-init] script.
+
+### [test](test) module
+
+Example resources for testing `ec2box`.
+
+- `main.tf` declares boxes to be created by `terraform apply test`.
+- `outputs.tf` declares outputs to be shown by `terraform output`.
+- `variables.tf` declares inputs to be read from [terraform.tfvars].
 
 ## dependencies
 
@@ -141,12 +173,35 @@ To find launch script logs in the stream, search by the box's name.
 
 
 
+
 [Terraform]: https://www.terraform.io/downloads.html
 
 
 
 
 ## examples
+
+Autoformat all `.tf` files in this repo:
+```sh
+terraform fmt
+terraform fmt test
+```
+
+Show public IP address of a box:
+```sh
+> terraform output public_ip
+23.555.42.808
+```
+
+Login to the box named `leeroy` (assuming it is running):
+```sh
+x
+```
+
+Use SSH to command the `leeroy` box to re-run its launch script:
+```sh
+x
+```
 
 Example `~/.aws/credentials` file with two profiles, `default` and `gandalf`:
 ```sh
@@ -158,28 +213,21 @@ aws_access_key_id = DUR1N
 aws_secret_access_key = M3770N
 ```
 
-Validate `.tf` files in `src/` folder and [autoformat] them in-place:
+Use `gandalf` profile to create, then destroy, all `test` resources:
 ```sh
-> terraform validate src && terraform fmt src
+terraform apply -var 'profile=gandalf' test
+terraform destroy -var 'profile=gandalf' test
 ```
 
-Show public IP address of a box:
-```sh
-> terraform output public_ip
-23.555.42.808
-```
+
+
+
 
 
 
 [Let's do this]: https://www.youtube.com/watch?v=jbq5dsQ-l9M
 
 ## faq
-
-### How do I view log messages?
-
-- CloudWatch console
-- Ubuntu logger
-- log rotation
 
 ### How do I deploy code to a box?
 
