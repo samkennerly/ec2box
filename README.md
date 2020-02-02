@@ -84,15 +84,15 @@ Terraform will upload a copy of the public key (`.pub` file) to AWS when a box i
 
 When a box is launched, its cloud-init [template] configures and starts automatic logging:
 
-- [cloud-init] sends logs to `/var/log/syslog` and starts an AWS [CloudWatch agent].
+- [cloud-init] downloads, installs, configures, and starts an AWS [CloudWatch agent].
 - The agent creates a [log stream] and begins streaming from  `/var/log/syslog`.
 - The launch script prints errors to STDERR and all other messages to STDOUT.
 - The shell redirects STDERR and STDOUT to the Ubuntu [logger].
 - The logger saves logs to `/var/log/syslog`.
 
-All logs are (hopefully) visible in the AWS [CloudWatch console].
-Each new EC2 instance creates a new [log stream].
-Streams are grouped by box name, e.g. `leeroy` boxes send logs to the `leeroy` group.
+Cloud-init, system, and launch script logs are (hopefully) visible in the AWS [CloudWatch console]. Streams are grouped by box name, e.g. `leeroy` boxes send logs to the `leeroy` group.
+
+To find launch script logs in the stream, search by the box's name.
 
 
 
