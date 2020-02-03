@@ -100,26 +100,15 @@ terraform.tfstate.backup
 ```
 State files can contain secrets! Be sure to [gitignore] them or use [remote state] instead.
 
-
-
-
-
-
 [AWS credentials]: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 [hard-coded]: https://www.terraform.io/docs/providers/aws/index.html#static-credentials
 [dangerous]: https://qz.com/674520/companies-are-sharing-their-secret-access-codes-on-github-and-they-may-not-even-know-it/
 [environment variables]: https://www.terraform.io/docs/providers/aws/index.html#environment-variables
 [credentials file]: https://www.terraform.io/docs/providers/aws/index.html#shared-credentials-file
-
-
-
 [CloudWatch agent]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html
 [CloudWatch console]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format_View.html
-
-
 [from this template]: https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template
 [Terminal]: https://en.wikipedia.org/wiki/Command-line_interface
-
 [initialized]: https://www.terraform.io/docs/commands/init.html
 [gitignore]: .gitignore
 [state]: https://www.terraform.io/docs/backends/state.html
@@ -139,7 +128,7 @@ These `.tf` files tell Terraform what to include with each box:
 
 Optional convenience scripts for common Terraform commands.
 
-- `bin/clean [FOLDER]` reformats and validates all `.tf` files in a folder.
+- `bin/clean [FOLDER]` autoformats and validates Terraform code.
 - `bin/down [FOLDER]` destroys all resources declared in a folder.
 - `bin/keygen [KEYPATH]` generates RSA key files named `KEYPATH` and `KEYPATH.pub`.
 - `bin/login [BOXNAME]` uses SSH to login to an EC2 instance.
@@ -171,40 +160,12 @@ Example resources for testing `ec2box`.
 1. [OpenSSH] to run `bin/keygen` and `bin/login`
 1. [jq] to run `bin/login`
 
-
-
-
 [Terraform]: https://www.terraform.io/downloads.html
-
-
-
 
 ## examples
 
-Autoformat all `.tf` files in this repo:
-```sh
-terraform fmt
-terraform fmt test
-```
-
-Show public IP address of a box:
-```sh
-> terraform output public_ip
-23.555.42.808
-```
-
-Login to the box named `leeroy` (assuming it is running):
-```sh
-x
-```
-
-Use SSH to command the `leeroy` box to re-run its launch script:
-```sh
-x
-```
-
 Example `~/.aws/credentials` file with two profiles, `default` and `gandalf`:
-```sh
+```
 [default]
 aws_access_key_id = CRM114
 aws_secret_access_key = POEOPEOEP
@@ -213,25 +174,107 @@ aws_access_key_id = DUR1N
 aws_secret_access_key = M3770N
 ```
 
-Use `gandalf` profile to create, then destroy, all `test` resources:
+Create or update all test boxes. (Terraform will prompt for confirmation.)
 ```sh
-terraform apply -var 'profile=gandalf' test
-terraform destroy -var 'profile=gandalf' test
+> bin/up
+Initialize and update test resources
+Initializing modules...
+
+...
+
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+dorothy = {
+  "address" = "ubuntu@ec2-54-81-15-89.compute-1.amazonaws.com"
+  "arn" = "arn:aws:ec2:us-east-1:055586236777:instance/i-0e1016c6382645d91"
+  "id" = "i-0e1016c6382645d91"
+  "name" = "dorothy"
+  "private_ip" = "172.31.18.73"
+  "public_ip" = "54.81.15.89"
+  "state" = "running"
+  "type" = "t3.micro"
+  "volume" = "vol-01ec093406b2ec798"
+  "zone" = "us-east-1c"
+}
+leeroy = {
+  "address" = "ubuntu@ec2-18-208-220-170.compute-1.amazonaws.com"
+  "arn" = "arn:aws:ec2:us-east-1:055586236777:instance/i-0b00f3f44b4e95c93"
+  "id" = "i-0b00f3f44b4e95c93"
+  "name" = "leeroy"
+  "private_ip" = "172.31.7.229"
+  "public_ip" = "18.208.220.170"
+  "state" = "running"
+  "type" = "t3.nano"
+  "volume" = "vol-07965727d3c779350"
+  "zone" = "us-east-1b"
+}
 ```
 
+Remote login to `dorothy` via SSH. (May require [confirmation] of host's public key.)
+```
+> bin/login dorothy
+SSH into dorothy at ubuntu@ec2-54-81-15-89.compute-1.amazonaws.com
+Welcome to Ubuntu 18.04.3 LTS (GNU/Linux 4.15.0-1051-aws x86_64)
 
+...
 
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
 
+ubuntu@ip-172-31-18-73:~$
+```
 
+Use SSH to command the `leeroy` box to re-run its launch script:
+```sh
+> bin/login leeroy '~/launch'
+SSH into leeroy at ubuntu@ec2-18-208-220-170.compute-1.amazonaws.com
+LEEROOOOOOOOOOOOOOOOOOOOOOOY JENKINS
+```
 
+Destroy all `test` boxes. (Terraform will prompt for confirmation.)
+```
+Destroy all Terraform-managed resources in test
+module.leeroy.aws_key_pair.ec2box: Refreshing state... [id=leeroy]
+module.leeroy.aws_security_group.ec2box: Refreshing state... [id=sg-026ab9e2574cdee33]
+module.dorothy.aws_cloudwatch_log_group.ec2box: Refreshing state... [id=dorothy]
 
+...
+
+module.dorothy.aws_iam_role.ec2box: Destroying... [id=dorothy]
+module.dorothy.aws_security_group.ec2box: Destruction complete after 0s
+module.dorothy.aws_iam_role.ec2box: Destruction complete after 0s
+
+Destroy complete! Resources: 14 destroyed.
+```
+
+[confirmation]: https://unix.stackexchange.com/questions/33271/how-to-avoid-ssh-asking-permission/33273
 [Let's do this]: https://www.youtube.com/watch?v=jbq5dsQ-l9M
 
 ## faq
 
+### How do I create my own infrastructure?
+
+Replace the `test` folder with your own module.
+
+### How do I choose different install and/or launch scripts?
+
+See the `dorothy` box in [test/main.tf] for an example.
+
 ### How do I deploy code to a box?
 
+There are (too) many ways to [deploy] code to cloud machines. Here are some ideas:
+
+- Upload code to an [S3 bucket] and use [aws s3 cp].
+- Pull from GitHub. (May require [deploy keys].)
+- Use AWS [CodeDeploy] to pull from GitHub.
+
+To deploy automatically when a box is created, edit the [install] script.
+
 ### Do I need to use remote state?
+
+No, but it's usually safer than keeping local state files on one person's laptop.
 
 ### Where are the official docs?
 
