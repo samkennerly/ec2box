@@ -4,15 +4,21 @@ provider "aws" {
 }
 
 # Rent some boxes
-module "leeroy" {
-  ec2type = "t3.nano"
-  name    = "leeroy"
-  source  = "./.."
-}
 module "dorothy" {
-  diskgb  = 10
+  name    = "dorothy"
   install = "${path.module}/dorothy/install"
   launch  = "${path.module}/dorothy/launch"
-  name    = "dorothy"
+  source  = "./.."
+}
+module "leeroy" {
+  name    = "leeroy"
+  ec2type = "t3.nano"
+  source  = "./.."
+}
+module "monty" {
+  name    = "monty"
+  diskgb  = 10
+  install = "${path.module}/monty/install"
+  launch  = "${path.module}/monty/launch"
   source  = "./.."
 }
