@@ -6,18 +6,16 @@ terraform {
   required_version = "~> 0.12"
 }
 
-# Read local files
+# Prepare cloud-init template
 locals {
-  policy = file(var.policy)
-  user_data = templatefile(var.template,
-    {
-      folder  = "/home/${var.user}"
-      install = file(var.install)
-      launch  = file(var.launch)
-      name    = var.name
-      user    = var.user
-    }
-  )
+  user_data = templatefile(var.template, local.user_vals)
+  user_vals = {
+    folder  = "/home/${var.user}",
+    install = var.install,
+    launch  = var.launch,
+    name    = var.name,
+    user    = var.user,
+  }
 }
 
 # Upload public SSH key to AWS
@@ -72,7 +70,7 @@ resource "aws_iam_role_policy" "ec2box" {
   policy = data.aws_iam_policy_document.ec2box.json
 }
 data "aws_iam_policy_document" "ec2box" {
-  source_json = local.policy
+  source_json = file(var.policy)
   statement {
     actions = [
       "logs:CreateLogGroup",

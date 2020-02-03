@@ -32,14 +32,14 @@ amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:${folder}/awslogs.jso
 
 echo "EC2BOX Write and run install script"
 cat > ${folder}/install <<- EOF &&
-${install}
+${file(install)}
 EOF
 chmod 700 ${folder}/install &&
 ${folder}/install
 
 echo "EC2BOX Write and run launch script as ${user}"
 cat > ${folder}/launch <<- EOF &&
-${launch}
+${file(launch)}
 EOF
 chown ${user} ${folder}/launch &&
 chmod 700 ${folder}/launch &&
