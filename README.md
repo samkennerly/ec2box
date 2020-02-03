@@ -78,8 +78,8 @@ Terraform [searches] for AWS credentials in this order:
 
 The [test] module requires input [variables]. Edit [terraform.tfvars] to change them.
 
-- <dfn>profile</dfn> selects an [AWS profile] to use for credentials
-- <dfn>region</dfn> selects an [AWS region] in which to launch boxes
+- **profile** selects an [AWS profile] to use for credentials
+- **region** selects an [AWS region] in which to launch boxes
 
 [test]: test
 [variables]: test/variables.tf
@@ -168,8 +168,8 @@ Default values for newly-created boxes. Each can be overridden.
 - `policy.json` is an [IAM policy] which grants AWS permissions to a box.
 - `template` is a [template file] for a [cloud-init] script.
 
-[background]: x
-[IAM policy]: x
+[background]: https://stackoverflow.com/questions/9190151/how-to-run-a-shell-script-in-the-background-and-get-no-output
+[IAM policy]: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html
 [template file]: https://www.terraform.io/docs/configuration/functions/templatefile.html
 [cloud-init]: https://cloudinit.readthedocs.io/en/latest/
 
