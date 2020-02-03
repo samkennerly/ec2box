@@ -15,17 +15,25 @@ Each <q>box</q> includes its own:
 - [keypair] to enable remote SSH login
 - [security group] to control network access
 - [CloudWatch log group] to store and read log messages
-- [IAM role], [policy], and [profile] to access other AWS resources
+- [IAM role], policy, and profile to access other AWS resources
 - [cloud-init] template to configure logs, install software, and run a script
 
 The [test] module launches example [free-tier] Ubuntu boxes:
 
-| box name | script language | what does it do? |
-| ---- | -------- | ---------------- |
-| leeroy | bash | print a message |
-| dorothy | ruby | print messages in an [infinite loop] |
+| box name | script language | what does it do?                   |
+| -------- | --------------- | ---------------------------------- |
+| leeroy   | bash            | print a message                    |
+| dorothy  | ruby            | print messages in an infinite loop |
 
-[EC2 instance]: https://aws.amazon.com/ec2/
+[Terraform]: https://www.terraform.io/
+[AWS EC2 instances]: https://aws.amazon.com/ec2/
+[keypair]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
+[security group]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security-groups.html
+[CloudWatch log group]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatchLogsConcepts.html
+[IAM role]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html
+[cloud-init]: https://cloudinit.readthedocs.io/en/latest/
+[test]: test
+[free-tier]: https://aws.amazon.com/free
 
 ## basics
 
@@ -41,44 +49,63 @@ To launch, inspect, and deactivate some test boxes:
 1. Run `bin/login` to login to a box remotely with SSH.
 1. Run `bin/down test` to destroy all example resources.
 
+[from this template]: https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template
+[terminal]: https://en.wikipedia.org/wiki/Command-line_interface
+[folder]: https://en.wikipedia.org/wiki/Directory_(computing)
+[terraform.tfvars]: terraform.tfvars
+
 ### credentials
 
 Terraform [searches] for AWS credentials in this order:
 
-1. [Static credentials] in `.tf` files can be [dangerous], so `ec2box` does not use them.
-1. [Environment variables] can be passed to `terraform` commands:
+1. Hard-coded credentials in `.tf` files can be [dangerous]. `ec2box` does not use them.
+1. Environment variables can be passed to Terraform commands:
     ```sh
     AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY
     ```
-1. [Credential files] can be stored in a `terraform` user's home folder:
+1. Credentials files can be stored in a Terraform user's home folder:
     ```sh
     ~/.aws/config
     ~/.aws/credentials
     ```
-1. An [IAM role] can authorize `terraform` commands run from an AWS resource.
+1. IAM roles can authorize Terraform commands run from an AWS resource.
+
+[searches]: https://www.terraform.io/docs/providers/aws/index.html#authentication
+[dangerous]: https://qz.com/674520/companies-are-sharing-their-secret-access-codes-on-github-and-they-may-not-even-know-it/
 
 ### inputs
 
-The [test] module requires [input variables]. Edit [terraform.tfvars] to change them.
+The [test] module requires input [variables]. Edit [terraform.tfvars] to change them.
 
 - <dfn>profile</dfn> selects an [AWS profile] to use for credentials
 - <dfn>region</dfn> selects an [AWS region] in which to launch boxes
 
+[test]: test
+[variables]: test/variables.tf
+[terraform.tfvars]: terraform.tfvars
+[AWS profile]: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
+[AWS region]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
+
 ### keypairs
 
-`ec2box` uses [SSH keys] to remotely control running boxes.
+An AWS [keypair] can be used to remotely control each box with [SSH].
 
-Run `bin/keygen` to generate keys, or copy an existing [RSA keypair] here:
+Run `bin/keygen` to generate keys, or copy an existing [RSA] keypair here:
 ```sh
 etc/ec2box_rsa
 etc/ec2box_rsa.pub
 ```
 Terraform will upload a copy of the public key (`.pub` file) to AWS when a box is created or when the public key changes. **The private key should be kept secret.** Be sure to [gitignore] it.
 
+[keypair]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
+[SSH]: https://samkennerly.github.io/random/ssh_keys.html
+[RSA]: https://en.wikipedia.org/wiki/RSA_(cryptosystem)
+[gitignore]: .gitignore
+
 ### logs
 
-When a box is launched, its cloud-init [template] configures and starts automatic logging:
+When a box is launched, it automatically configures and starts automatic logging:
 
 - [cloud-init] downloads, installs, configures, and starts an AWS [CloudWatch agent].
 - The agent creates a [log stream] and begins streaming from  `/var/log/syslog`.
@@ -86,42 +113,39 @@ When a box is launched, its cloud-init [template] configures and starts automati
 - The shell redirects STDERR and STDOUT to the Ubuntu [logger].
 - The logger saves logs to `/var/log/syslog`.
 
-Cloud-init, system, and launch script logs are (hopefully) visible in the AWS [CloudWatch console]. Streams are grouped by box name, e.g. `leeroy` boxes send logs to the `leeroy` group.
+Cloud-init, system, and launch script logs are (hopefully) visible in the AWS [CloudWatch console]. Streams are grouped by box name. To find launch script logs in the stream, search for the box's name.
 
-To find launch script logs in the stream, search by the box's name.
+[cloud-init]: https://cloudinit.readthedocs.io/en/latest/
+[CloudWatch agent]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html
+[log stream]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatchLogsConcepts.html
+[logger]: http://manpages.ubuntu.com/manpages/xenial/man1/logger.1.html
+[CloudWatch console]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format_View.html
 
 ### state files
 
-Terraform will create [state files] when the `test` module is [initialized]:
+Terraform will save [state] files when the `test` module is [initialized]:
 ```sh
 terraform.tfstate
 terraform.tfstate.backup
 ```
 **State files can contain secrets!** Be sure to [gitignore] them or use [remote state] instead.
 
-[AWS credentials]: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
-[hard-coded]: https://www.terraform.io/docs/providers/aws/index.html#static-credentials
-[dangerous]: https://qz.com/674520/companies-are-sharing-their-secret-access-codes-on-github-and-they-may-not-even-know-it/
-[environment variables]: https://www.terraform.io/docs/providers/aws/index.html#environment-variables
-[credentials file]: https://www.terraform.io/docs/providers/aws/index.html#shared-credentials-file
-[CloudWatch agent]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html
-[CloudWatch console]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format_View.html
-[from this template]: https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template
-[Terminal]: https://en.wikipedia.org/wiki/Command-line_interface
+[state]: https://www.terraform.io/docs/backends/state.html
 [initialized]: https://www.terraform.io/docs/commands/init.html
 [gitignore]: .gitignore
-[state]: https://www.terraform.io/docs/backends/state.html
 [remote state]: https://www.terraform.io/docs/state/remote.html
-[backend]: https://www.terraform.io/docs/backends/
-[outputs]: https://learn.hashicorp.com/terraform/getting-started/outputs
 
 ## contents
 
 These `.tf` files tell Terraform what to include with each box:
 
-- [main.tf] declares which AWS resources to acquire.
-- [outputs.tf] declares which values to return to other modules.
-- [variables.tf] declares required inputs and their default values.
+- `main.tf` declares AWS [resources] to acquire.
+- `outputs.tf` declares [outputs] to return to other modules.
+- `variables.tf` declares required [inputs] and their default values.
+
+[resources]: https://www.terraform.io/docs/configuration/resources.html
+[outputs]: https://www.terraform.io/docs/configuration/outputs.html
+[inputs]: https://www.terraform.io/docs/configuration/variables.html
 
 ### [bin](bin) folder
 
@@ -129,20 +153,25 @@ Optional convenience scripts for common Terraform commands.
 
 - `bin/clean [FOLDER]` autoformats and validates Terraform code.
 - `bin/down [FOLDER]` destroys all resources declared in a folder.
-- `bin/keygen [KEYPATH]` generates RSA key files named `KEYPATH` and `KEYPATH.pub`.
-- `bin/login [BOXNAME]` uses SSH to login to an EC2 instance.
+- `bin/keygen` generates and saves an RSA keypair to the `etc` folder.
+- `bin/login [BOXNAME]` uses SSH to login to an EC2 instance remotely.
 - `bin/up [FOLDER]` creates or updates all resources declared in a folder.
 
 ### [etc](etc) folder
 
 Default values for newly-created boxes. Each can be overridden.
 
-- `ec2box_rsa` is an RSA private key which should be [gitignored].
-- `ec2box_rsa.pub` is the RSA public key corresponding to `ec2box_rsa`.
-- `install` is a script which installs software on a new box.
-- `launch` is launched in the [background] when a box is ready to use.
+- `ec2box_rsa` is an RSA private key.
+- `ec2box_rsa.pub` is an RSA public key.
+- `install` is a script which installs software.
+- `launch` runs in the [background] when a box is ready to use.
 - `policy.json` is an [IAM policy] which grants AWS permissions to a box.
 - `template` is a [template file] for a [cloud-init] script.
+
+[background]: x
+[IAM policy]: x
+[template file]: https://www.terraform.io/docs/configuration/functions/templatefile.html
+[cloud-init]: https://cloudinit.readthedocs.io/en/latest/
 
 ### [test](test) module
 
@@ -152,6 +181,8 @@ Example resources for testing `ec2box`.
 - `outputs.tf` declares outputs to be shown by `terraform output`.
 - `variables.tf` declares inputs to be read from [terraform.tfvars].
 
+[terraform.tfars]: terraform.tfvars
+
 ## dependencies
 
 1. [AWS credentials]
@@ -159,7 +190,10 @@ Example resources for testing `ec2box`.
 1. [OpenSSH] to run `bin/keygen` and `bin/login`
 1. [jq] to run `bin/login`
 
+[AWS credentials]: https://docs.aws.amazon.com/general/latest/gr/aws-security-credentials.html
 [Terraform]: https://www.terraform.io/downloads.html
+[OpenSSH]: https://www.openssh.com/
+[jq]: https://stedolan.github.io/jq/
 
 ## examples
 
@@ -232,7 +266,7 @@ SSH into leeroy at ubuntu@ec2-18-208-220-170.compute-1.amazonaws.com
 LEEROOOOOOOOOOOOOOOOOOOOOOOY JENKINS
 ```
 
-Destroy all `test` boxes. (Terraform will prompt for confirmation.)
+Destroy all test boxes. (Terraform will prompt for confirmation.)
 ```
 Destroy all Terraform-managed resources in test
 module.leeroy.aws_key_pair.ec2box: Refreshing state... [id=leeroy]
@@ -255,25 +289,36 @@ Destroy complete! Resources: 14 destroyed.
 
 ### How do I define my own boxes?
 
-Edit the `test` folder. Rename it if you want to.
+Edit the [test] folder. Rename it if you want to.
 
-### Do I need to use remote state?
+[test]: test
+
+### Do I need to use [remote state]?
 
 No, but it's usually safer than keeping local state files on one person's laptop.
+
+[remote state]: https://www.terraform.io/docs/backends/state.html
 
 ### How do I choose different install and/or launch scripts?
 
 See the `dorothy` box in [test/main.tf] for an example.
 
+[test/main.tf]: test/main.tf
+
 ### How do I deploy code to a box?
 
-There are (too) many ways to [deploy] code to cloud machines. Here are some ideas:
+There are (too) many ways to get code onto cloud machines. Here are some ideas:
 
-- Upload code to an [S3 bucket] and use [aws s3 cp].
-- Pull from GitHub. (May require [deploy keys].)
-- Use AWS [CodeDeploy] to pull from GitHub.
+- Use [deploy keys] to pull from a private GitHub repository.
+- Upload code to a private [S3 bucket] and use [aws s3 cp].
+- Use AWS [CodeDeploy] for everything.
 
 To deploy automatically when a box is created, edit the [install] script.
+
+[deploy keys]: https://developer.github.com/v3/guides/managing-deploy-keys/
+[S3 bucket]: https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingBucket.html
+[aws s3 cp]: https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html
+[CodeDeploy]: https://docs.aws.amazon.com/codedeploy/latest/userguide/welcome.html
 
 ### Where are the official docs?
 
