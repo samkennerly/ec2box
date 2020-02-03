@@ -309,16 +309,17 @@ See the `dorothy` box in [test/main.tf] for an example.
 
 There are (too) many ways to get code onto cloud machines. Here are some ideas:
 
+- Upload code to a private [S3 bucket] and [aws s3 sync] it to a box.
 - Use [deploy keys] to pull from a private GitHub repository.
-- Upload code to a private [S3 bucket] and use [aws s3 cp].
 - Use AWS [CodeDeploy] for everything.
 
-To deploy automatically when a box is created, edit the [install] script.
+To deploy automatically when a box is created, edit its [install] script.
 
-[deploy keys]: https://developer.github.com/v3/guides/managing-deploy-keys/
 [S3 bucket]: https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingBucket.html
-[aws s3 cp]: https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html
+[aws s3 sync]: https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
+[deploy keys]: https://developer.github.com/v3/guides/managing-deploy-keys/
 [CodeDeploy]: https://docs.aws.amazon.com/codedeploy/latest/userguide/welcome.html
+[install]: etc/install
 
 ### Where are the official docs?
 
