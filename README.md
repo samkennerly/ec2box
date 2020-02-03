@@ -76,7 +76,6 @@ etc/ec2box_rsa.pub
 ```
 Terraform will upload a copy of the public key (`.pub` file) to AWS when a box is created or when the public key changes. **The private key should be kept secret.** Be sure to [gitignore] it.
 
-
 ### logs
 
 When a box is launched, its cloud-init [template] configures and starts automatic logging:
@@ -98,7 +97,7 @@ Terraform will create [state files] when the `test` module is [initialized]:
 terraform.tfstate
 terraform.tfstate.backup
 ```
-State files can contain secrets! Be sure to [gitignore] them or use [remote state] instead.
+**State files can contain secrets!** Be sure to [gitignore] them or use [remote state] instead.
 
 [AWS credentials]: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 [hard-coded]: https://www.terraform.io/docs/providers/aws/index.html#static-credentials
@@ -120,9 +119,9 @@ State files can contain secrets! Be sure to [gitignore] them or use [remote stat
 
 These `.tf` files tell Terraform what to include with each box:
 
-- [main.tf] declares AWS resources to be provisioned for each box.
-- [outputs.tf] declares values to be returned when a box is created.
-- [variables.tf] declares required inputs and sets default values.
+- [main.tf] declares which AWS resources to acquire.
+- [outputs.tf] declares which values to return to other modules.
+- [variables.tf] declares required inputs and their default values.
 
 ### [bin](bin) folder
 
@@ -254,9 +253,13 @@ Destroy complete! Resources: 14 destroyed.
 
 ## faq
 
-### How do I create my own infrastructure?
+### How do I define my own boxes?
 
-Replace the `test` folder with your own module.
+Edit the `test` folder. Rename it if you want to.
+
+### Do I need to use remote state?
+
+No, but it's usually safer than keeping local state files on one person's laptop.
 
 ### How do I choose different install and/or launch scripts?
 
@@ -271,10 +274,6 @@ There are (too) many ways to [deploy] code to cloud machines. Here are some idea
 - Use AWS [CodeDeploy] to pull from GitHub.
 
 To deploy automatically when a box is created, edit the [install] script.
-
-### Do I need to use remote state?
-
-No, but it's usually safer than keeping local state files on one person's laptop.
 
 ### Where are the official docs?
 
