@@ -2,6 +2,6 @@
 
 folder=${1:-test}
 
-echo "Clean Terraform files in $folder"
-terraform fmt "$folder"
+echo "Autoformat all Terraform files and validate $folder"
+terraform fmt -recursive
 terraform validate "$folder"
