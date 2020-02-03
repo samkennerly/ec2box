@@ -1,6 +1,6 @@
 variable "profile" {
-  description = "AWS profile from ~/.aws/credentials"
+  description = "AWS profile for credentials file (if any)"
 }
 variable "region" {
-  description = "Launch ec2box in this AWS region"
+  description = "Launch boxes in this AWS region"
 }

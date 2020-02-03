@@ -2,6 +2,8 @@ provider "aws" {
   profile = var.profile
   region  = var.region
 }
+
+# Rent some boxes
 module "leeroy" {
   ec2type = "t3.nano"
   name    = "leeroy"

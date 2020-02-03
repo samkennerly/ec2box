@@ -1,4 +1,4 @@
-# Install AWS module
+# Specify Terraform versions
 terraform {
   required_providers {
     aws = "~> 2.44"
@@ -6,7 +6,7 @@ terraform {
   required_version = "~> 0.12"
 }
 
-# Prepare cloud-init template
+# Render cloud-init script from template file
 locals {
   user_data = templatefile(var.template, local.user_vals)
   user_vals = {
@@ -24,7 +24,7 @@ resource "aws_key_pair" "ec2box" {
   public_key = file(var.public_key)
 }
 
-# Create CloudWatch Log group
+# Create a CloudWatch Log group
 resource "aws_cloudwatch_log_group" "ec2box" {
   name              = var.name
   retention_in_days = 365
@@ -55,19 +55,14 @@ resource "aws_iam_role" "ec2box" {
   description        = "${var.name} permissions"
   name               = var.name
 }
-data "aws_iam_policy_document" "ec2_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-    principals {
-      identifiers = ["ec2.amazonaws.com"]
-      type        = "Service"
-    }
-  }
-}
 resource "aws_iam_role_policy" "ec2box" {
   name   = aws_iam_role.ec2box.name
   role   = aws_iam_role.ec2box.id
   policy = data.aws_iam_policy_document.ec2box.json
+}
+resource "aws_iam_instance_profile" "ec2box" {
+  name = aws_iam_role.ec2box.name
+  role = aws_iam_role.ec2box.id
 }
 data "aws_iam_policy_document" "ec2box" {
   source_json = file(var.policy)
@@ -81,9 +76,14 @@ data "aws_iam_policy_document" "ec2box" {
     resources = ["arn:aws:logs:*:*:*"]
   }
 }
-resource "aws_iam_instance_profile" "ec2box" {
-  name = aws_iam_role.ec2box.name
-  role = aws_iam_role.ec2box.id
+data "aws_iam_policy_document" "ec2_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      identifiers = ["ec2.amazonaws.com"]
+      type        = "Service"
+    }
+  }
 }
 
 # Rent a computer

@@ -1,6 +1,8 @@
 output "dorothy" {
-  value = module.dorothy
+  description = "ec2box outputs for box 'dorothy'"
+  value       = module.dorothy
 }
 output "leeroy" {
-  value = module.leeroy
+  description = "ec2box outputs for box 'leeroy'"
+  value       = module.leeroy
 }
