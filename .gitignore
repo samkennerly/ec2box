@@ -13,3 +13,6 @@ Thumbs.db
 bin/terraform
 .terraform
 *.tfstate*
+
+# To-do list
+/todo.txt
