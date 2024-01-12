@@ -7,6 +7,7 @@ There is no cloud. It's just someone else's computer.
   src="https://raw.githubusercontent.com/samkennerly/posters/master/ec2box.jpeg"
   title="I am the Architect.">
 
+
 ## abstract
 
 Use [Terraform] to automatically launch and configure [Amazon EC2] resources. Each <q>box</q> includes its own:
@@ -37,6 +38,7 @@ The [test] module launches example [free-tier] Ubuntu boxes:
 [test]: test
 [free-tier]: https://aws.amazon.com/free
 
+
 ## basics
 
 - Create a new repo [from this template].
@@ -47,28 +49,21 @@ The [test] module launches example [free-tier] Ubuntu boxes:
 
 ### authorize AWS
 
-Terraform automatically [searches for AWS security credentials] in this order:
+Terraform needs access to [AWS security credentials]. These can be hard-coded in `.tf` files, but storing secrets in code [can be dangerous]. It is safer to use [environment variables]:
+```sh
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+```
+or [credentials files] in the user's home folder:
+```sh
+~/.aws/config
+~/.aws/credentials
+```
 
-1. AWS keys stored in `.tf` files. **Caution**: Storing secrets in code can be [dangerous].
-
-1. [Environment variables] passed to Terraform commands:
-    ```sh
-    AWS_ACCESS_KEY_ID
-    AWS_SECRET_ACCESS_KEY
-    ```
-
-1. Credential files in the user's home folder:
-    ```sh
-    ~/.aws/config
-    ~/.aws/credentials
-    ```
-
-1. If Terraform commands are run from an AWS resource, it can use [IAM roles].
-
-[searches for AWS security credentials]: https://www.terraform.io/docs/providers/aws/index.html#authentication
-[dangerous]: https://www.zdnet.com/article/over-100000-github-repos-have-leaked-api-or-cryptographic-keys/
-[Environment variables]: https://en.wikipedia.org/wiki/Environment_variable
-[IAM roles]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html
+[AWS security credentials]: https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html
+[can be dangerous]: https://www.zdnet.com/article/over-100000-github-repos-have-leaked-api-or-cryptographic-keys/
+[environment variables]: https://registry.terraform.io/providers/hashicorp/aws/latest/docs#environment-variables
+[credentials files]: https://registry.terraform.io/providers/hashicorp/aws/latest/docs#shared-configuration-and-credentials-files
 
 ### choose a keypair
 
