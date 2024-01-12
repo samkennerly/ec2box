@@ -77,7 +77,7 @@ etc/ec2box_rsa.pub
 
 When a new box is created, or the public key changes, Terraform will upload a copy of the public key to AWS. Anyone with both keys (public and private) can then login remotely to each box with [SSH].
 
-**Caution: The private key in the `ec2box_rsa` file must be kept secret.** This repo [gitignores] it.
+*Caution: The private key in the `ec2box_rsa` file must be kept secret.* This repo [gitignores] it.
 
 [keypair]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
 [SSH]: https://samkennerly.github.io/random/ssh_keys.html
@@ -93,7 +93,7 @@ Terraform will save [state] files when the `test` module is [initialized]:
 terraform.tfstate
 terraform.tfstate.backup
 ```
-**Caution: State files (including [remote state]) can contain secrets!** This repo [gitignores] them.
+*Caution: State files (including [remote state]) can contain secrets!* This repo [gitignores] them.
 
 [terraform.tfvars]: terraform.tfvars
 [AWS profile]: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
@@ -106,7 +106,7 @@ terraform.tfstate.backup
 
 - Run `bin/login` to login to a box remotely with SSH.
 
-Ideally, remote login is only necessary when errors cannot be diagnosed by reading logs. Each box automatically creates its own [CloudWatch log group] and records log messages in this way:
+Usually, remote login is unnecessary because boxes can be monitored by reading log messages. Each box creates its own [CloudWatch log group] and streams logs to it. The pipeline works like this:
 
 1. [cloud-init] downloads, installs, configures, and starts an AWS [CloudWatch agent].
 1. The agent creates a [log stream] and begins streaming from  `/var/log/syslog`.
