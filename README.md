@@ -20,10 +20,11 @@ Use [Terraform] to automatically launch and configure [Amazon EC2] resources. Ea
 
 The [test] module launches example [free-tier] Ubuntu boxes:
 
-| box name | script language | what does it do?                   |
+| box name | script language | what it does                       |
 | -------- | --------------- | ---------------------------------- |
-| leeroy   | bash            | print a message                    |
-| dorothy  | ruby            | print messages in an infinite loop |
+| dorothy  | ruby            | print timestamped messages         |
+| leeroy   | bash            | print a message, then crash        |
+| monty    | python          | serve a minimal web app            |
 
 [Terraform]: https://www.terraform.io/
 [Amazon EC2]: https://aws.amazon.com/ec2/
