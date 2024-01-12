@@ -206,16 +206,6 @@ Configuration files for a text box named `monty` which serves a very simple web 
 
 ## examples
 
-Example `~/.aws/credentials` file with two profiles, `default` and `gandalf`:
-```
-[default]
-aws_access_key_id = CRM114
-aws_secret_access_key = POEOPEOEP
-[gandalf]
-aws_access_key_id = DUR1N
-aws_secret_access_key = M3770N
-```
-
 Create or update all test boxes. (Terraform will prompt for confirmation.)
 ```sh
 > bin/up
@@ -226,35 +216,10 @@ Initializing modules...
 
 Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
 
-Outputs:
-
-dorothy = {
-  "address" = "ubuntu@ec2-54-81-15-89.compute-1.amazonaws.com"
-  "arn" = "arn:aws:ec2:us-east-1:055586236777:instance/i-0e1016c6382645d91"
-  "id" = "i-0e1016c6382645d91"
-  "name" = "dorothy"
-  "private_ip" = "172.31.18.73"
-  "public_ip" = "54.81.15.89"
-  "state" = "running"
-  "type" = "t3.micro"
-  "volume" = "vol-01ec093406b2ec798"
-  "zone" = "us-east-1c"
-}
-leeroy = {
-  "address" = "ubuntu@ec2-18-208-220-170.compute-1.amazonaws.com"
-  "arn" = "arn:aws:ec2:us-east-1:055586236777:instance/i-0b00f3f44b4e95c93"
-  "id" = "i-0b00f3f44b4e95c93"
-  "name" = "leeroy"
-  "private_ip" = "172.31.7.229"
-  "public_ip" = "18.208.220.170"
-  "state" = "running"
-  "type" = "t3.nano"
-  "volume" = "vol-07965727d3c779350"
-  "zone" = "us-east-1b"
-}
+...
 ```
 
-Remote login to `dorothy` via SSH. (May require [confirmation] of host's public key.)
+Remote login to `dorothy` via SSH. (You might need to confirm the [host public key].)
 ```
 > bin/login dorothy
 SSH into dorothy at ubuntu@ec2-54-81-15-89.compute-1.amazonaws.com
@@ -262,13 +227,10 @@ Welcome to Ubuntu 18.04.3 LTS (GNU/Linux 4.15.0-1051-aws x86_64)
 
 ...
 
-To run a command as administrator (user "root"), use "sudo <command>".
-See "man sudo_root" for details.
-
-ubuntu@ip-172-31-18-73:~$
+ubuntu@ip-123-45-67-89:~$
 ```
 
-Use SSH to command the `leeroy` box to re-run its launch script:
+Use SSH to run the launch script on the `leeroy` box again:
 ```sh
 > bin/login leeroy '~/launch'
 SSH into leeroy at ubuntu@ec2-18-208-220-170.compute-1.amazonaws.com
@@ -278,21 +240,13 @@ LEEROOOOOOOOOOOOOOOOOOOOOOOY JENKINS
 Destroy all test boxes. (Terraform will prompt for confirmation.)
 ```
 Destroy all Terraform-managed resources in test
-module.leeroy.aws_key_pair.ec2box: Refreshing state... [id=leeroy]
-module.leeroy.aws_security_group.ec2box: Refreshing state... [id=sg-026ab9e2574cdee33]
-module.dorothy.aws_cloudwatch_log_group.ec2box: Refreshing state... [id=dorothy]
 
 ...
-
-module.dorothy.aws_iam_role.ec2box: Destroying... [id=dorothy]
-module.dorothy.aws_security_group.ec2box: Destruction complete after 0s
-module.dorothy.aws_iam_role.ec2box: Destruction complete after 0s
 
 Destroy complete! Resources: 14 destroyed.
 ```
 
-[confirmation]: https://unix.stackexchange.com/questions/33271/how-to-avoid-ssh-asking-permission/33273
-[Let's do this]: https://www.youtube.com/watch?v=jbq5dsQ-l9M
+[host public key]: https://unix.stackexchange.com/questions/33271/how-to-avoid-ssh-asking-permission/33273
 
 
 ## faq
@@ -317,13 +271,13 @@ See the `dorothy` box in [test/main.tf] for an example.
 
 ### How do I deploy code to a box?
 
-There are many ways to get code onto cloud machines. Here are some common tactics:
+Here are some common methods:
 
 - Upload code to a private [S3 bucket] and [aws s3 sync] it to a box.
 - Use [deploy keys] to pull from a private GitHub repository.
 - Use AWS [CodeDeploy] for everything.
 
-To deploy automatically when a box is created, edit its [install] script.
+To deploy code automatically when a box is created, edit its [install] script.
 
 [S3 bucket]: https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingBucket.html
 [aws s3 sync]: https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
