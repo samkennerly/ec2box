@@ -280,7 +280,7 @@ Here are some common methods:
 To deploy code automatically when a box is created, edit its [install] script.
 
 [S3 bucket]: https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingBucket.html
-[aws s3 sync]: https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
+[aws s3 sync]: https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/sync.html
 [deploy keys]: https://developer.github.com/v3/guides/managing-deploy-keys/
 [CodeDeploy]: https://docs.aws.amazon.com/codedeploy/latest/userguide/welcome.html
 [install]: etc/install
