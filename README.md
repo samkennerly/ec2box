@@ -122,7 +122,6 @@ Cloud-init, system, and launch script logs will then be visible in the AWS [Clou
 [logger]: http://manpages.ubuntu.com/manpages/xenial/man1/logger.1.html
 [CloudWatch console]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format_View.html
 
-
 ### deactivate boxes
 
 1. Run `bin/down test` to destroy all example resources.
@@ -130,19 +129,26 @@ Cloud-init, system, and launch script logs will then be visible in the AWS [Clou
 
 ## contents
 
-These `.tf` files tell Terraform what to include with each box:
+Configuration files for the Terraform [root module]:
 
-- `main.tf` declares AWS [resources] to acquire.
-- `outputs.tf` declares [outputs] to return to other modules.
-- `variables.tf` declares required [inputs] and their default values.
+- [main.tf] declares AWS [resources] to acquire.
+- [outputs.tf] declares [outputs] to return to other modules.
+- [variables.tf] declares required [inputs] and their default values.
+- [terraform.tfvars] file sets [root module variables].
 
+[root module]: https://developer.hashicorp.com/terraform/language/modules
+[main.tf]: main.tf
 [resources]: https://www.terraform.io/docs/configuration/resources.html
+[outputs.tf]: outputs.tf
 [outputs]: https://www.terraform.io/docs/configuration/outputs.html
+[variables.tf]: variables.tf
 [inputs]: https://www.terraform.io/docs/configuration/variables.html
+[terraform.tfvars]: terraform.tfvars
+[root module variables]: https://developer.hashicorp.com/terraform/language/values/variables#assigning-values-to-root-module-variables
 
-### [bin](bin) folder
+### [bin](bin)
 
-Optional convenience scripts for common Terraform commands.
+Short scripts to run Terraform commands:
 
 - `bin/clean [FOLDER]` autoformats and validates Terraform code.
 - `bin/down [FOLDER]` destroys all resources declared in a folder.
@@ -150,9 +156,9 @@ Optional convenience scripts for common Terraform commands.
 - `bin/login [BOXNAME]` uses SSH to login to an EC2 instance remotely.
 - `bin/up [FOLDER]` creates or updates all resources declared in a folder.
 
-### [etc](etc) folder
+### [etc](etc)
 
-Default values for newly-created boxes. Each can be overridden.
+Default configuration files for each newly-created box:
 
 - `ec2box_rsa` is an RSA private key.
 - `ec2box_rsa.pub` is an RSA public key.
@@ -166,15 +172,24 @@ Default values for newly-created boxes. Each can be overridden.
 [template file]: https://www.terraform.io/docs/configuration/functions/templatefile.html
 [cloud-init]: https://cloudinit.readthedocs.io/en/latest/
 
-### [test](test) module
+### [test](test)
 
-Example resources for testing `ec2box`.
+Example resources for testing `ec2box`:
 
 - `main.tf` declares boxes to be created by `terraform apply test`.
 - `outputs.tf` declares outputs to be shown by `terraform output`.
 - `variables.tf` declares inputs to be read from [terraform.tfvars].
 
 [terraform.tfars]: terraform.tfvars
+
+#### [test/dorothy](test/dorothy)
+
+Configuration files for a test box named `dorothy` which prints timestamped messages every 1 second.
+
+#### [test/monty](test/monty)
+
+Configuration files for a text box named `monty` which serves a very simple web application.
+
 
 ## dependencies
 
@@ -187,6 +202,7 @@ Example resources for testing `ec2box`.
 [Terraform]: https://www.terraform.io/downloads.html
 [OpenSSH]: https://www.openssh.com/
 [jq]: https://stedolan.github.io/jq/
+
 
 ## examples
 
@@ -278,6 +294,7 @@ Destroy complete! Resources: 14 destroyed.
 [confirmation]: https://unix.stackexchange.com/questions/33271/how-to-avoid-ssh-asking-permission/33273
 [Let's do this]: https://www.youtube.com/watch?v=jbq5dsQ-l9M
 
+
 ## faq
 
 ### How do I define my own boxes?
@@ -300,7 +317,7 @@ See the `dorothy` box in [test/main.tf] for an example.
 
 ### How do I deploy code to a box?
 
-There are (too) many ways to get code onto cloud machines. Here are some ideas:
+There are many ways to get code onto cloud machines. Here are some common tactics:
 
 - Upload code to a private [S3 bucket] and [aws s3 sync] it to a box.
 - Use [deploy keys] to pull from a private GitHub repository.
