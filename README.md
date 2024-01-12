@@ -25,7 +25,6 @@ The [test] module launches example [free-tier] Ubuntu boxes:
 | -------- | --------------- | ---------------------------------- |
 | dorothy  | ruby            | print timestamped messages         |
 | leeroy   | bash            | print a message, then crash        |
-| monty    | python          | serve a minimal web app            |
 
 [Terraform]: https://www.terraform.io/
 [Amazon EC2]: https://aws.amazon.com/ec2/
@@ -185,10 +184,6 @@ Example resources for testing `ec2box`:
 #### [test/dorothy](test/dorothy)
 
 Configuration files for a test box named `dorothy` which prints timestamped messages every 1 second.
-
-#### [test/monty](test/monty)
-
-Configuration files for a text box named `monty` which serves a very simple web application.
 
 
 ## dependencies
