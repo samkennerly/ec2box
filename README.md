@@ -3,19 +3,19 @@
 There is no cloud. It's just someone else's computer.
 
 <img
-  alt="I am the Architect."
+  alt="Will Ferrell, wearing a 3-piece suit, sits in front of a wall of computer monitors, each of which shows Neo from the film THE MATRIX."
   src="https://raw.githubusercontent.com/samkennerly/posters/master/ec2box.jpeg"
-  title="It's more fun to compute.">
+  title="I am the Architect.">
 
 ## abstract
 
-`ec2box` uses [Terraform] to launch [AWS EC2 instances].
-Each <q>box</q> includes its own:
+Use [Terraform] to automatically launch and configure [Amazon EC2] resources. Each <q>box</q> includes its own:
 
-- [keypair] to enable remote SSH login
+- [EC2 instance] to run programs
+- [keypair] to allow remote SSH login
 - [security group] to control network access
 - [CloudWatch log group] to store and read log messages
-- [IAM role], policy, and profile to access other AWS resources
+- [IAM role], policy, and profile to authorize use of other AWS resources
 - [cloud-init] template to configure logs, install software, and run a script
 
 The [test] module launches example [free-tier] Ubuntu boxes:
@@ -26,7 +26,8 @@ The [test] module launches example [free-tier] Ubuntu boxes:
 | dorothy  | ruby            | print messages in an infinite loop |
 
 [Terraform]: https://www.terraform.io/
-[AWS EC2 instances]: https://aws.amazon.com/ec2/
+[Amazon EC2]: https://aws.amazon.com/ec2/
+[EC2 instance]: https://aws.amazon.com/ec2/instance-types/
 [keypair]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
 [security group]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security-groups.html
 [CloudWatch log group]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatchLogsConcepts.html
@@ -37,83 +38,87 @@ The [test] module launches example [free-tier] Ubuntu boxes:
 
 ## basics
 
-To launch, inspect, and deactivate some test boxes:
-
-1. Create a new repo [from this template].
-1. Open a [terminal] and `cd` to this [folder].
-1. Ensure Terraform can find AWS credentials.
-1. Edit [terraform.tfvars] to set input variables.
-1. Run `bin/keygen` to generate an RSA keypair.
-1. Run `bin/up test` to launch all example boxes.
-1. View CloudWatch logs to ensure the boxes worked.
-1. Run `bin/login` to login to a box remotely with SSH.
-1. Run `bin/down test` to destroy all example resources.
+- Create a new repo [from this template].
+- Open a [terminal] and `cd` to this folder.
 
 [from this template]: https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template
 [terminal]: https://en.wikipedia.org/wiki/Command-line_interface
-[folder]: https://en.wikipedia.org/wiki/Directory_(computing)
-[terraform.tfvars]: terraform.tfvars
 
-### credentials
+### authorize AWS
 
-Terraform [searches] for AWS credentials in this order:
+Terraform automatically [searches for AWS security credentials] in this order:
 
-1. Hard-coded credentials in `.tf` files can be [dangerous]. `ec2box` does not use them.
-1. Environment variables can be passed to Terraform commands:
+1. AWS keys stored in `.tf` files. **Caution**: Storing secrets in code can be [dangerous].
+
+1. [Environment variables] passed to Terraform commands:
     ```sh
     AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY
     ```
-1. Credentials files can be stored in a Terraform user's home folder:
+
+1. Credential files in the user's home folder:
     ```sh
     ~/.aws/config
     ~/.aws/credentials
     ```
-1. IAM roles can authorize Terraform commands run from an AWS resource.
 
-[searches]: https://www.terraform.io/docs/providers/aws/index.html#authentication
-[dangerous]: https://qz.com/674520/companies-are-sharing-their-secret-access-codes-on-github-and-they-may-not-even-know-it/
+1. If Terraform commands are run from an AWS resource, it can use [IAM roles].
 
-### inputs
+[searches for AWS security credentials]: https://www.terraform.io/docs/providers/aws/index.html#authentication
+[dangerous]: https://www.zdnet.com/article/over-100000-github-repos-have-leaked-api-or-cryptographic-keys/
+[Environment variables]: https://en.wikipedia.org/wiki/Environment_variable
+[IAM roles]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html
 
-The [test] module requires input [variables]. Edit [terraform.tfvars] to change them.
+### choose a keypair
 
-- **profile** selects an [AWS profile] to use for credentials
-- **region** selects an [AWS region] in which to launch boxes
+- Run `bin/keygen` to generate a [keypair].
 
-[test]: test
-[variables]: test/variables.tf
-[terraform.tfvars]: terraform.tfvars
-[AWS profile]: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
-[AWS region]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
-
-### keypairs
-
-An AWS [keypair] can be used to remotely control each box with [SSH].
-
-Run `bin/keygen` to generate keys, or copy an existing [RSA] keypair here:
+The private and public keys will be saved here:
 ```sh
 etc/ec2box_rsa
 etc/ec2box_rsa.pub
 ```
-Terraform will upload a copy of the public key (`.pub` file) to AWS when a box is created or when the public key changes. **The private key should be kept secret.** Be sure to [gitignore] it.
+
+When a new box is created, or the public key changes, Terraform will upload a copy of the public key to AWS. Anyone with both keys (public and private) can then login remotely to each box with [SSH].
+
+**Caution: The private key in the `ec2box_rsa` file must be kept secret.** This repo [gitignores] it.
 
 [keypair]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
 [SSH]: https://samkennerly.github.io/random/ssh_keys.html
-[RSA]: https://en.wikipedia.org/wiki/RSA_(cryptosystem)
-[gitignore]: .gitignore
+[gitignores]: .gitignore
 
-### logs
+### launch boxes
 
-When a box is launched, it automatically configures and starts automatic logging:
+- Edit [terraform.tfvars] to choose an [AWS profile] and [AWS region].
+- Run `bin/up test` to launch all example boxes.
 
-- [cloud-init] downloads, installs, configures, and starts an AWS [CloudWatch agent].
-- The agent creates a [log stream] and begins streaming from  `/var/log/syslog`.
-- The launch script prints errors to STDERR and all other messages to STDOUT.
-- The shell redirects STDERR and STDOUT to the Ubuntu [logger].
-- The logger saves logs to `/var/log/syslog`.
+Terraform will save [state] files when the `test` module is [initialized]:
+```sh
+terraform.tfstate
+terraform.tfstate.backup
+```
+**Caution: State files (including [remote state]) can contain secrets!** This repo [gitignores] them.
 
-Cloud-init, system, and launch script logs are (hopefully) visible in the AWS [CloudWatch console]. Streams are grouped by box name. To find launch script logs in the stream, search for the box's name.
+[terraform.tfvars]: terraform.tfvars
+[AWS profile]: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
+[AWS region]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions
+[state]: https://www.terraform.io/docs/backends/state.html
+[initialized]: https://www.terraform.io/docs/commands/init.html
+[remote state]: https://www.terraform.io/docs/state/remote.html
+
+### inspect boxes
+
+- Run `bin/login` to login to a box remotely with SSH.
+
+Ideally, remote login is only necessary when errors cannot be diagnosed by reading logs. Each box automatically creates its own [CloudWatch log group] and records log messages in this way:
+
+1. [cloud-init] downloads, installs, configures, and starts an AWS [CloudWatch agent].
+1. The agent creates a [log stream] and begins streaming from  `/var/log/syslog`.
+1. The launch script prints errors to STDERR and all other messages to STDOUT.
+1. The shell redirects STDERR and STDOUT to the Ubuntu [logger].
+1. The logger saves logs to `/var/log/syslog`.
+
+Cloud-init, system, and launch script logs will then be visible in the AWS [CloudWatch console].
 
 [cloud-init]: https://cloudinit.readthedocs.io/en/latest/
 [CloudWatch agent]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html
@@ -121,19 +126,11 @@ Cloud-init, system, and launch script logs are (hopefully) visible in the AWS [C
 [logger]: http://manpages.ubuntu.com/manpages/xenial/man1/logger.1.html
 [CloudWatch console]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format_View.html
 
-### state files
 
-Terraform will save [state] files when the `test` module is [initialized]:
-```sh
-terraform.tfstate
-terraform.tfstate.backup
-```
-**State files can contain secrets!** Be sure to [gitignore] them or use [remote state] instead.
+### deactivate boxes
 
-[state]: https://www.terraform.io/docs/backends/state.html
-[initialized]: https://www.terraform.io/docs/commands/init.html
-[gitignore]: .gitignore
-[remote state]: https://www.terraform.io/docs/state/remote.html
+1. Run `bin/down test` to destroy all example resources.
+
 
 ## contents
 
